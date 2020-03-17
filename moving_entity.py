@@ -8,3 +8,6 @@ class MovingEntity:
         self.speed: int = 0
         self.direction: Direction = Direction.Up
         self.texture: str = ''
+
+    def move_to_next_cell(self):
+        pass

@@ -23,4 +23,3 @@ Necessary features:
     + Immortality for some time
     + Additional health
     + Increasing shooting speed
-

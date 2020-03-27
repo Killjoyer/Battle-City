@@ -37,8 +37,26 @@ class Tank(MovingEntity):
         self.direction = direction
         return self.direction
 
+    def turn_right(self):
+        x = -self.direction[1]
+        y = self.direction[0]
+        self.direction = (x, y)
+
+    def turn_left(self):
+        x = self.direction[1]
+        y = -self.direction[0]
+        self.direction = (x, y)
+
     def is_wall(self, field: Field, direction: Direction):
         pass
+
+    def move_to_next_cell(self):
+        print(f'moving {self}')
+        try:
+            self.x += self.direction[0]
+        except Exception as e:
+            print(e)
+        self.y += self.direction[1]
 
 
 class Bullet(MovingEntity):

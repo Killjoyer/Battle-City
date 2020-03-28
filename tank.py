@@ -2,7 +2,6 @@ from enum import Enum
 
 from direction import Direction
 from field import Field
-from moving_entity import MovingEntity
 
 
 class TankOwner(Enum):
@@ -16,7 +15,7 @@ class TankType(Enum):
                'damage': 10}
 
 
-class Tank(MovingEntity):
+class Tank:
     def __init__(self, x: int, y: int, tank_type: TankType,
                  direction: Direction, owner: TankOwner):
         super().__init__()
@@ -58,12 +57,20 @@ class Tank(MovingEntity):
         self.x += self.direction[0]
         self.y += self.direction[1]
 
-    def move_backward(self):
+    def move_backward(self, field):
+        if self.direction == Direction.Down and self.y <= 0:
+            return
+        if self.direction == Direction.Up and self.y >= field.height - 1:
+            return
+        if self.direction == Direction.Right and self.x <= 0:
+            return
+        if self.direction == Direction.Left and self.x >= field.width - 1:
+            return
         self.x -= self.direction[0]
         self.y -= self.direction[1]
 
 
-class Bullet(MovingEntity):
+class Bullet:
     def __init__(self, shooter: Tank, x: int, y: int, direction: Direction):
         super().__init__()
         self.x = x

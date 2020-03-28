@@ -35,7 +35,6 @@ class GameWindow(QMainWindow):
 
     def game_update(self):
         for owner, tank in self.tanks.items():
-            # tank.move(tank.tank.x * self.cellSize, tank.tank.y * self.cellSize)
             if (abs(tank.tank.x - tank.actual_x / self.cellSize) > 1e-8 or
                     abs(tank.tank.y - tank.actual_y / self.cellSize) > 1e-8):
                 tank.actual_x += (self.moving_wills[owner] *
@@ -70,7 +69,7 @@ class GameWindow(QMainWindow):
         elif key == Qt.Key_S:
             print('S pressed')
             self.moving_wills[TankOwner.Human] = MovingWills.Backward
-            self.game.tanks[TankOwner.Human].move_backward()
+            self.game.tanks[TankOwner.Human].move_backward(self.game.field)
 
 
 class TankVisualisation(QWidget):

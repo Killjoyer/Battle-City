@@ -13,7 +13,7 @@ class TankOwner(Enum):
 class TankType(Enum):
     Default = {'speed': 1,
                'shooting_rate': 10,
-               'damage': 10,}
+               'damage': 10}
 
 
 class Tank(MovingEntity):
@@ -47,13 +47,13 @@ class Tank(MovingEntity):
         pass
 
     def move_forward(self, field: Field):
-        if self.direction == Direction.Up and self.y == -1:
+        if self.direction == Direction.Up and self.y <= 0:
             return
-        if self.direction == Direction.Down and self.y == field.height - 1:
+        if self.direction == Direction.Down and self.y >= field.height - 1:
             return
-        if self.direction == Direction.Left and self.x == -1:
+        if self.direction == Direction.Left and self.x <= 0:
             return
-        if self.direction == Direction.Right and self.x == field.width - 1:
+        if self.direction == Direction.Right and self.x >= field.width - 1:
             return
         self.x += self.direction[0]
         self.y += self.direction[1]

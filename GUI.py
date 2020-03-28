@@ -36,12 +36,14 @@ class GameWindow(QMainWindow):
     def game_update(self):
         for owner, tank in self.tanks.items():
             # tank.move(tank.tank.x * self.cellSize, tank.tank.y * self.cellSize)
-            if (tank.tank.x != tank.actual_x // self.cellSize or
-                    tank.tank.y != tank.actual_y // self.cellSize):
+            if (abs(tank.tank.x - tank.actual_x / self.cellSize) > 1e-8 or
+                    abs(tank.tank.y - tank.actual_y / self.cellSize) > 1e-8):
                 tank.actual_x += (self.moving_wills[owner] *
                                   tank.tank.speed * tank.tank.direction[0])
                 tank.actual_y += (self.moving_wills[owner] *
                                   tank.tank.speed * tank.tank.direction[1])
+                print(f'X - {tank.actual_x}, {tank.tank.x}\n',
+                      f'Y - {tank.actual_y}, {tank.tank.y}', sep='')
                 tank.move(tank.actual_x, tank.actual_y)
             else:
                 self.moving_wills[owner] = MovingWills.Nowhere

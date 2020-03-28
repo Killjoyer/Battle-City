@@ -1,14 +1,23 @@
-from enum import Enum
+class DestructibleCell:
+    def __init__(self, health=50):
+        self.destructible = False
+        self.passable = False
+        self.health = health
+
+    def destroy(self):
+        pass
 
 
-class CellType(Enum):
-    BrickWall = '#'
-    WoodenWall = '='
-    Space = ' '
-    Bushes = '@'
-    StoneWall = '$'
+class ImmortalCell:
+    def __init__(self, passable):
+        self.passable = passable
 
 
-class Cell:
-    def __init__(self, cell_type: CellType):
-        self.type = cell_type
+class BrickWall(ImmortalCell):
+    def __init__(self):
+        super().__init__(False)
+
+
+class EmptyCell(ImmortalCell):
+    def __init__(self):
+        super().__init__(False)

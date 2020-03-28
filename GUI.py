@@ -4,7 +4,9 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QPixmap, QTransform
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel
 
-from tank import *
+from cells import EmptyCell, BrickWall
+from direction import Direction
+from tank import TankOwner, Tank
 
 
 class MovingWills:
@@ -16,17 +18,19 @@ class MovingWills:
 class GameWindow(QMainWindow):
     def __init__(self, game):
         super().__init__()
-        self.cellSize = 32
+        self.cell_size = 32
         self.game = game
+        self.field = [
+            [CellVisualisation(self, game.field.level[i][j], i, j) for j in
+             range(self.game.field.width)] for i in range(game.field.height)]
         self.setGeometry(300, 100,
-                         game.field.width * self.cellSize,
-                         game.field.height * self.cellSize)
+                         game.field.width * self.cell_size,
+                         game.field.height * self.cell_size)
         self.tanks = {}
         self.moving_wills = {}
         for owner, tank in game.tanks.items():
             self.tanks[owner] = TankVisualisation(self, tank)
             self.moving_wills[owner] = MovingWills.Nowhere
-        self.setStyleSheet("""background-color: #ffffff;""")
         self.show()
         self.timer = QTimer()
         self.timer.setInterval(10)
@@ -35,8 +39,8 @@ class GameWindow(QMainWindow):
 
     def game_update(self):
         for owner, tank in self.tanks.items():
-            if (abs(tank.tank.x - tank.actual_x / self.cellSize) > 1e-8 or
-                    abs(tank.tank.y - tank.actual_y / self.cellSize) > 1e-8):
+            if (abs(tank.tank.x - tank.actual_x / self.cell_size) > 1e-8 or
+                    abs(tank.tank.y - tank.actual_y / self.cell_size) > 1e-8):
                 tank.actual_x += (self.moving_wills[owner] *
                                   tank.tank.speed * tank.tank.direction[0])
                 tank.actual_y += (self.moving_wills[owner] *
@@ -77,13 +81,13 @@ class TankVisualisation(QWidget):
         super().__init__()
         self.tank = tank
         self.father = father
-        self.actual_x = tank.x * father.cellSize
-        self.actual_y = tank.y * father.cellSize
+        self.actual_x = tank.x * father.cell_size
+        self.actual_y = tank.y * father.cell_size
         self.angle = 0
         self.q_trans = QTransform().rotate(self.angle)
         self.setParent(father)
         self.setGeometry(self.actual_x, self.actual_y,
-                         father.cellSize, father.cellSize)
+                         father.cell_size, father.cell_size)
         self.img_source = os.path.join('Resources', 'green_tank.png')
         self.img = QPixmap(self.img_source)
         self.label = QLabel()
@@ -104,3 +108,23 @@ class TankVisualisation(QWidget):
         self.q_trans = QTransform().rotate(self.angle)
         self.img = QPixmap(self.img_source).transformed(self.q_trans)
         self.label.setPixmap(self.img)
+
+
+class CellVisualisation(QWidget):
+    Textures = {
+        type(BrickWall()): os.path.join('Resources', 'brick_wall.png'),
+        type(EmptyCell()): os.path.join('Resources', 'empty_cell.png'),
+    }
+
+    def __init__(self, father: GameWindow, cell, y, x):
+        super().__init__()
+        self.setParent(father)
+        self.x = x * father.cell_size
+        self.y = y * father.cell_size
+        self.move(self.x, self.y)
+        self.img_source = CellVisualisation.Textures[type(cell)]
+        self.img = QPixmap(self.img_source)
+        self.label = QLabel()
+        self.label.setPixmap(self.img)
+        self.label.setParent(self)
+        self.show()

@@ -8,5 +8,5 @@ class MovingEntity:
         self.speed: int = 0
         self.direction: Direction = Direction.Up
 
-    def move_to_next_cell(self):
+    def move_forward(self):
         pass

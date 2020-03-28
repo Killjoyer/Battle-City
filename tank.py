@@ -11,7 +11,7 @@ class TankOwner(Enum):
 
 
 class TankType(Enum):
-    Default = {'speed': 10,
+    Default = {'speed': 1,
                'shooting_rate': 10,
                'damage': 10,}
 
@@ -33,10 +33,6 @@ class Tank(MovingEntity):
     def die(self):
         pass
 
-    def turn_to(self, direction: Direction):
-        self.direction = direction
-        return self.direction
-
     def turn_right(self):
         x = -self.direction[1]
         y = self.direction[0]
@@ -50,13 +46,21 @@ class Tank(MovingEntity):
     def is_wall(self, field: Field, direction: Direction):
         pass
 
-    def move_to_next_cell(self):
-        print(f'moving {self}')
-        try:
-            self.x += self.direction[0]
-        except Exception as e:
-            print(e)
+    def move_forward(self, field: Field):
+        if self.direction == Direction.Up and self.y == -1:
+            return
+        if self.direction == Direction.Down and self.y == field.height - 1:
+            return
+        if self.direction == Direction.Left and self.x == -1:
+            return
+        if self.direction == Direction.Right and self.x == field.width - 1:
+            return
+        self.x += self.direction[0]
         self.y += self.direction[1]
+
+    def move_backward(self):
+        self.x -= self.direction[0]
+        self.y -= self.direction[1]
 
 
 class Bullet(MovingEntity):

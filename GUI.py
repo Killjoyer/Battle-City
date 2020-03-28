@@ -7,6 +7,12 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel
 from tank import *
 
 
+class MovingWills:
+    Nowhere = 0
+    Forward = 1
+    Backward = -1
+
+
 class GameWindow(QMainWindow):
     def __init__(self, game):
         super().__init__()
@@ -16,8 +22,10 @@ class GameWindow(QMainWindow):
                          game.field.width * self.cellSize,
                          game.field.height * self.cellSize)
         self.tanks = {}
+        self.moving_wills = {}
         for owner, tank in game.tanks.items():
             self.tanks[owner] = TankVisualisation(self, tank)
+            self.moving_wills[owner] = MovingWills.Nowhere
         self.setStyleSheet("""background-color: #ffffff;""")
         self.show()
         self.timer = QTimer()
@@ -27,30 +35,53 @@ class GameWindow(QMainWindow):
 
     def game_update(self):
         for owner, tank in self.tanks.items():
-            tank.move(tank.tank.x * self.cellSize, tank.tank.y * self.cellSize)
+            # tank.move(tank.tank.x * self.cellSize, tank.tank.y * self.cellSize)
+            if (tank.tank.x != tank.actual_x // self.cellSize or
+                    tank.tank.y != tank.actual_y // self.cellSize):
+                tank.actual_x += (self.moving_wills[owner] *
+                                  tank.tank.speed * tank.tank.direction[0])
+                tank.actual_y += (self.moving_wills[owner] *
+                                  tank.tank.speed * tank.tank.direction[1])
+                tank.move(tank.actual_x, tank.actual_y)
+            else:
+                self.moving_wills[owner] = MovingWills.Nowhere
             tank.turn()
 
     def keyPressEvent(self, e: QKeyEvent):
         key = e.key()
         if key == Qt.Key_W:
             print('W pressed')
-            self.game.tanks[TankOwner.Human].move_to_next_cell()
+            self.game.tanks[TankOwner.Human].move_forward(self.game.field)
+            self.moving_wills[TankOwner.Human] = MovingWills.Forward
+            print(self.tanks[TankOwner.Human].actual_x // 32,
+                  self.game.tanks[TankOwner.Human].x)
         elif key == Qt.Key_D:
             print('D pressed')
+            if self.moving_wills[TankOwner.Human] != MovingWills.Nowhere:
+                return
             self.game.tanks[TankOwner.Human].turn_right()
         elif key == Qt.Key_A:
             print('A pressed')
+            if self.moving_wills[TankOwner.Human] != MovingWills.Nowhere:
+                return
             self.game.tanks[TankOwner.Human].turn_left()
+        elif key == Qt.Key_S:
+            print('S pressed')
+            self.moving_wills[TankOwner.Human] = MovingWills.Backward
+            self.game.tanks[TankOwner.Human].move_backward()
 
 
 class TankVisualisation(QWidget):
     def __init__(self, father: GameWindow, tank: Tank):
         super().__init__()
         self.tank = tank
+        self.father = father
+        self.actual_x = tank.x * father.cellSize
+        self.actual_y = tank.y * father.cellSize
         self.angle = 0
         self.q_trans = QTransform().rotate(self.angle)
         self.setParent(father)
-        self.setGeometry(self.tank.x, self.tank.y,
+        self.setGeometry(self.actual_x, self.actual_y,
                          father.cellSize, father.cellSize)
         self.img_source = os.path.join('Resources', 'green_tank.png')
         self.img = QPixmap(self.img_source)
@@ -69,9 +100,6 @@ class TankVisualisation(QWidget):
             self.angle = 90
         else:
             self.angle = 270
-        try:
-            self.q_trans = QTransform().rotate(self.angle)
-            self.img = QPixmap(self.img_source).transformed(self.q_trans)
-            self.label.setPixmap(self.img)
-        except Exception as e:
-            print(e)
+        self.q_trans = QTransform().rotate(self.angle)
+        self.img = QPixmap(self.img_source).transformed(self.q_trans)
+        self.label.setPixmap(self.img)

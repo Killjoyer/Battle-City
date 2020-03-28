@@ -1,6 +1,6 @@
 # Battle City 
 
-## Problem Situation
+## Problem explanation
 
 The task is to create from scratch a fully working game, 
 similar to another very known game "Battle City".  
@@ -23,3 +23,9 @@ Necessary features:
     + Immortality for some time
     + Additional health
     + Increasing shooting speed
+
+## How to start playing
+
+1. Clone project or download `.zip`
+2. Write in terminal `python main.py` or `python3 main.py` while
+in game's directory

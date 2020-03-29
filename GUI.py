@@ -20,7 +20,7 @@ class GameWindow(QMainWindow):
         super().__init__()
         self.setWindowIcon(QIcon(os.path.join('Resources', 'icon.ico')))
         self.setWindowTitle('Battle Town')
-        self.cell_size = 32
+        self.cell_size = 64
         self.game = game
         self.field = [
             [CellVisualisation(self, game.field.level[i][j], j, i) for j in
@@ -89,9 +89,10 @@ class TankVisualisation(QWidget):
         self.setGeometry(self.actual_x, self.actual_y,
                          father.cell_size, father.cell_size)
         self.img_source = os.path.join('Resources', 'green_tank.png')
-        self.img = QPixmap(self.img_source)
+        self.img = QPixmap(self.img_source).scaled(father.cell_size, father.cell_size)
         self.label = QLabel()
-        self.label.setPixmap(self.img.transformed(self.q_trans))
+        self.label.setPixmap(self.img
+                             .transformed(self.q_trans))
         self.label.setParent(self)
         self.show()
 
@@ -124,6 +125,7 @@ class CellVisualisation(QWidget):
         self.img_source = CellVisualisation.Textures[type(cell)]
         self.img = QPixmap(self.img_source)
         self.label = QLabel()
-        self.label.setPixmap(self.img)
+        self.label.setPixmap(self.img
+                             .scaled(father.cell_size, father.cell_size))
         self.label.setParent(self)
         self.show()

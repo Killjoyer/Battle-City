@@ -4,7 +4,7 @@
 
 
 
-name: Python application
+name: Full testing on UBUNTU
 
 
 
@@ -47,5 +47,5 @@ jobs:
 
     - name: Run graphics
       run: |
-        python main.py
+        python3 main.py
 

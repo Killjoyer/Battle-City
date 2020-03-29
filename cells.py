@@ -20,4 +20,4 @@ class BrickWall(ImmortalCell):
 
 class EmptyCell(ImmortalCell):
     def __init__(self):
-        super().__init__(False)
+        super().__init__(True)

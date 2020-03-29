@@ -7,14 +7,14 @@ from game import Game
 
 
 def main():
-    level = ['        ',
-             '        ',
-             ' ###### ',
-             ' #      ',
-             ' #      ',
-             ' #      ',
-             ' #      ',
-             '        ']
+    level = ['           ',
+             '#          ',
+             ' # # # ### ',
+             ' #         ',
+             ' #         ',
+             ' #         ',
+             '    #      ',
+             '           ']
     game = Game(8, 8, level)
     app = QApplication(sys.argv)
     window = GameWindow(game)

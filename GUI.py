@@ -1,7 +1,7 @@
 import os
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QKeyEvent, QPixmap, QTransform
+from PyQt5.QtGui import QKeyEvent, QPixmap, QTransform, QIcon
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel
 
 from cells import EmptyCell, BrickWall
@@ -18,6 +18,8 @@ class MovingWills:
 class GameWindow(QMainWindow):
     def __init__(self, game):
         super().__init__()
+        self.setWindowIcon(QIcon(os.path.join('Resources', 'icon.ico')))
+        self.setWindowTitle('Battle Town')
         self.cell_size = 32
         self.game = game
         self.field = [
@@ -45,8 +47,8 @@ class GameWindow(QMainWindow):
                                   tank.tank.speed * tank.tank.direction[0])
                 tank.actual_y += (self.moving_wills[owner] *
                                   tank.tank.speed * tank.tank.direction[1])
-                print(f'X - {tank.actual_x}, {tank.tank.x}\n',
-                      f'Y - {tank.actual_y}, {tank.tank.y}', sep='')
+                # print(f'X - {tank.actual_x}, {tank.tank.x}\n',
+                #       f'Y - {tank.actual_y}, {tank.tank.y}', sep='')
                 tank.move(tank.actual_x, tank.actual_y)
             else:
                 self.moving_wills[owner] = MovingWills.Nowhere
@@ -58,8 +60,6 @@ class GameWindow(QMainWindow):
             print('W pressed')
             self.game.tanks[TankOwner.Human].move_forward(self.game.field)
             self.moving_wills[TankOwner.Human] = MovingWills.Forward
-            print(self.tanks[TankOwner.Human].actual_x // 32,
-                  self.game.tanks[TankOwner.Human].x)
         elif key == Qt.Key_D:
             print('D pressed')
             if self.moving_wills[TankOwner.Human] != MovingWills.Nowhere:

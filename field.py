@@ -7,9 +7,9 @@ class Field:
         '#': lambda: BrickWall(),
     }
 
-    def __init__(self, width: int, height: int, start_position: list):
-        self.width = width
-        self.height = height
+    def __init__(self, start_position: list):
+        self.width = len(start_position[0])
+        self.height = len(start_position)
         self.level = self.read_level(start_position)
 
     def read_level(self, start_position):

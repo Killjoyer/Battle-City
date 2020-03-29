@@ -14,5 +14,6 @@ class Field:
         self.level = self.read_level(start_position)
 
     def read_level(self, start_position):
-        return [[Field.Cells[start_position[i][j]]() for j in range(self.width)]
+        return [[Field.Cells[start_position[i][j]]()
+                 for j in range(self.width)]
                 for i in range(self.height)]

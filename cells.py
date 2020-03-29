@@ -21,3 +21,8 @@ class BrickWall(ImmortalCell):
 class EmptyCell(ImmortalCell):
     def __init__(self):
         super().__init__(True)
+
+
+class WoodenCrate(DestructibleCell):
+    def __init__(self):
+        super().__init__()

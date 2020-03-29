@@ -1,10 +1,11 @@
-from cells import BrickWall, EmptyCell
+from cells import BrickWall, EmptyCell, WoodenCrate
 
 
 class Field:
     Cells = {
         ' ': lambda: EmptyCell(),
         '#': lambda: BrickWall(),
+        'x': lambda: WoodenCrate(),
     }
 
     def __init__(self, start_position: list):

@@ -8,14 +8,14 @@ from game import Game
 
 def main():
     level = ['           ',
-             '#          ',
+             '#      x   ',
              ' # # # ### ',
-             ' #         ',
-             ' #         ',
-             ' #         ',
+             ' #     x   ',
+             ' #     x   ',
+             ' #     x   ',
              '    #      ',
              '           ']
-    game = Game(8, 8, level)
+    game = Game(level)
     app = QApplication(sys.argv)
     window = GameWindow(game)
     sys.exit(app.exec())

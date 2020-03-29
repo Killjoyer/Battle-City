@@ -42,9 +42,6 @@ class Tank:
         y = -self.direction[0]
         self.direction = (x, y)
 
-    def is_wall(self, field: Field, direction: Direction):
-        pass
-
     def move_forward(self, field: Field):
         if self.direction == Direction.Up and self.y <= 0:
             return

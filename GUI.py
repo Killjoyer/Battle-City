@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QPixmap, QTransform, QIcon
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel
 
-from cells import EmptyCell, BrickWall
+from cells import EmptyCell, BrickWall, WoodenCrate
 from direction import Direction
 from tank import TankOwner, Tank
 
@@ -23,7 +23,7 @@ class GameWindow(QMainWindow):
         self.cell_size = 32
         self.game = game
         self.field = [
-            [CellVisualisation(self, game.field.level[i][j], i, j) for j in
+            [CellVisualisation(self, game.field.level[i][j], j, i) for j in
              range(self.game.field.width)] for i in range(game.field.height)]
         self.setGeometry(300, 100,
                          game.field.width * self.cell_size,
@@ -47,8 +47,8 @@ class GameWindow(QMainWindow):
                                   tank.tank.speed * tank.tank.direction[0])
                 tank.actual_y += (self.moving_wills[owner] *
                                   tank.tank.speed * tank.tank.direction[1])
-                # print(f'X - {tank.actual_x}, {tank.tank.x}\n',
-                #       f'Y - {tank.actual_y}, {tank.tank.y}', sep='')
+                # print(f'X - {tank.actual_x}, {tank.tank.x}',
+                #       f'Y - {tank.actual_y}, {tank.tank.y}', sep='\n')
                 tank.move(tank.actual_x, tank.actual_y)
             else:
                 self.moving_wills[owner] = MovingWills.Nowhere
@@ -96,7 +96,6 @@ class TankVisualisation(QWidget):
         self.show()
 
     def turn(self):
-        self.angle = (self.angle + 90) % 360
         if self.tank.direction == Direction.Up:
             self.angle = 0
         elif self.tank.direction == Direction.Down:
@@ -106,17 +105,17 @@ class TankVisualisation(QWidget):
         else:
             self.angle = 270
         self.q_trans = QTransform().rotate(self.angle)
-        self.img = QPixmap(self.img_source).transformed(self.q_trans)
-        self.label.setPixmap(self.img)
+        self.label.setPixmap(self.img.transformed(self.q_trans))
 
 
 class CellVisualisation(QWidget):
     Textures = {
         type(BrickWall()): os.path.join('Resources', 'brick_wall.png'),
         type(EmptyCell()): os.path.join('Resources', 'empty_cell.png'),
+        type(WoodenCrate()): os.path.join('Resources', 'wooden_crate.png')
     }
 
-    def __init__(self, father: GameWindow, cell, y, x):
+    def __init__(self, father: GameWindow, cell, x, y):
         super().__init__()
         self.setParent(father)
         self.x = x * father.cell_size

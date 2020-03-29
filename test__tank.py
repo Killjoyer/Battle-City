@@ -18,14 +18,14 @@ class TankTests(unittest.TestCase):
 
     def test_moves_forward(self):
         tank = Tank(0, 0, TankType.Default, Direction.Right, TankOwner.Human)
-        field = Field(2, 2, ['  ', '  '])
+        field = Field(['  ', '  '])
         tank.move_forward(field)
         self.assertEqual(tank.x, 1)
         self.assertEqual(tank.y, 0)
 
     def test_dont_move_through_edge_UP(self):
         tank = Tank(0, 0, TankType.Default, Direction.Up, TankOwner.Human)
-        field = Field(2, 2, ['  ', '  '])
+        field = Field(['  ', '  '])
         tank.move_forward(field)
         msg = 'Penetrates the border UP FORWARD'
         self.assertEqual(tank.x, 0, msg)
@@ -39,7 +39,7 @@ class TankTests(unittest.TestCase):
 
     def test_dont_move_through_edge_RIGHT(self):
         tank = Tank(1, 1, TankType.Default, Direction.Right, TankOwner.Human)
-        field = Field(2, 2, ['  ', '  '])
+        field = Field(['  ', '  '])
         tank.move_forward(field)
         msg = 'Penetrates the border RIGHT FORWARD'
         self.assertEqual(tank.x, 1)
@@ -53,7 +53,7 @@ class TankTests(unittest.TestCase):
 
     def test_dont_move_through_edge_DOWN(self):
         tank = Tank(1, 1, TankType.Default, Direction.Down, TankOwner.Human)
-        field = Field(2, 2, ['  ', '  '])
+        field = Field(['  ', '  '])
         tank.move_forward(field)
         msg = 'Penetrates the border DOWN FORWARD'
         self.assertEqual(tank.x, 1)
@@ -67,7 +67,7 @@ class TankTests(unittest.TestCase):
 
     def test_dont_move_through_edge_LEFT(self):
         tank = Tank(0, 0, TankType.Default, Direction.Left, TankOwner.Human)
-        field = Field(2, 2, ['  ', '  '])
+        field = Field(['  ', '  '])
         tank.move_forward(field)
         msg = 'Penetrates the border LEFT FORWARD'
         self.assertEqual(tank.x, 0)
@@ -79,3 +79,9 @@ class TankTests(unittest.TestCase):
         self.assertEqual(tank.x, 0)
         self.assertEqual(tank.y, 0)
 
+    def test_dont_move_into_wall(self):
+        tank = Tank(0, 0, TankType.Default, Direction.Right, TankOwner.Human)
+        field = Field([' #', '##'])
+        tank.move_forward(field)
+        self.assertEqual(tank.x, 0)
+        self.assertEqual(tank.y, 0)

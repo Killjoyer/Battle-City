@@ -57,21 +57,21 @@ class GameWindow(QMainWindow):
     def keyPressEvent(self, e: QKeyEvent):
         key = e.key()
         if key == Qt.Key_W:
-            print('W pressed')
+            # print('W pressed')
             self.game.tanks[TankOwner.Human].move_forward(self.game.field)
             self.moving_wills[TankOwner.Human] = MovingWills.Forward
         elif key == Qt.Key_D:
-            print('D pressed')
+            # print('D pressed')
             if self.moving_wills[TankOwner.Human] != MovingWills.Nowhere:
                 return
             self.game.tanks[TankOwner.Human].turn_right()
         elif key == Qt.Key_A:
-            print('A pressed')
+            # print('A pressed')
             if self.moving_wills[TankOwner.Human] != MovingWills.Nowhere:
                 return
             self.game.tanks[TankOwner.Human].turn_left()
         elif key == Qt.Key_S:
-            print('S pressed')
+            # print('S pressed')
             self.moving_wills[TankOwner.Human] = MovingWills.Backward
             self.game.tanks[TankOwner.Human].move_backward(self.game.field)
 

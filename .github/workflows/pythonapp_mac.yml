@@ -36,7 +36,3 @@ jobs:
         pip install pytest
         pip install pytest-cov
         pytest --cov=.
-
-    - name: Run graphics
-      run: |
-        python3 main.py

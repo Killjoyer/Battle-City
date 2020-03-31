@@ -62,6 +62,9 @@ class GameWindow(QMainWindow):
         else:
             self.timer.start()
         if key == Qt.Key_W:
+            if self.tanks[TankOwner.Human].moving_will == MovingWills.Backward:
+                print('SWAPPED DIRECTION')
+                self.tanks[TankOwner.Human].ticks = 0
             self.tanks[TankOwner.Human].moves = True
             self.tanks[TankOwner.Human].moving_will = MovingWills.Forward
         elif key == Qt.Key_D:
@@ -73,6 +76,8 @@ class GameWindow(QMainWindow):
                 return
             self.game.tanks[TankOwner.Human].turn_left()
         elif key == Qt.Key_S:
+            if self.tanks[TankOwner.Human].moving_will == MovingWills.Forward:
+                self.tanks[TankOwner.Human].ticks = 0
             self.tanks[TankOwner.Human].moving_will = MovingWills.Backward
             self.tanks[TankOwner.Human].moves = True
 

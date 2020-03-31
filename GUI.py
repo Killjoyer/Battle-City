@@ -88,6 +88,7 @@ class TankVisualisation(QWidget):
         self.actual_y = tank.y * father.cell_size
         self.moving_will = MovingWills.Nowhere
         self.angle = 0
+        # BRANCH "MASTER"
         self.q_trans = QTransform().rotate(self.angle)
         self.setParent(father)
         self.setGeometry(self.actual_x, self.actual_y,

@@ -1,4 +1,4 @@
-from cells import BrickWall, EmptyCell, WoodenCrate
+from cells import BrickWall, EmptyCell, WoodenCrate, PoisonousMist
 
 
 class Field:
@@ -6,6 +6,7 @@ class Field:
         ' ': lambda: EmptyCell(),
         '#': lambda: BrickWall(),
         'x': lambda: WoodenCrate(),
+        'm': lambda: PoisonousMist(),
     }
 
     def __init__(self, start_position: list):

@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QPixmap, QTransform, QIcon
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel
 
-from cells import EmptyCell, BrickWall, WoodenCrate
+from cells import EmptyCell, BrickWall, WoodenCrate, PoisonousMist
 from direction import Direction
 from tank import TankOwner, Tank
 
@@ -38,6 +38,7 @@ class GameWindow(QMainWindow):
         self.timer.setInterval(10)
         self.timer.timeout.connect(self.game_update)
         self.timer.start()
+        self.paused = 0
 
     def game_update(self):
         for owner, tank in self.tanks.items():
@@ -56,7 +57,14 @@ class GameWindow(QMainWindow):
 
     def keyPressEvent(self, e: QKeyEvent):
         key = e.key()
-        if key == Qt.Key_W:
+        if key == Qt.Key_Escape:
+            self.paused = (self.paused + 1) % 2
+            if self.paused:
+                self.timer.stop()
+                return
+            else:
+                self.timer.start()
+        elif key == Qt.Key_W:
             # print('W pressed')
             self.game.tanks[TankOwner.Human].move_forward(self.game.field)
             self.moving_wills[TankOwner.Human] = MovingWills.Forward
@@ -89,7 +97,8 @@ class TankVisualisation(QWidget):
         self.setGeometry(self.actual_x, self.actual_y,
                          father.cell_size, father.cell_size)
         self.img_source = os.path.join('Resources', 'green_tank.png')
-        self.img = QPixmap(self.img_source).scaled(father.cell_size, father.cell_size)
+        self.img = QPixmap(self.img_source).scaled(father.cell_size,
+                                                   father.cell_size)
         self.label = QLabel()
         self.label.setPixmap(self.img
                              .transformed(self.q_trans))
@@ -113,7 +122,8 @@ class CellVisualisation(QWidget):
     Textures = {
         type(BrickWall()): os.path.join('Resources', 'brick_wall.png'),
         type(EmptyCell()): os.path.join('Resources', 'empty_cell.png'),
-        type(WoodenCrate()): os.path.join('Resources', 'wooden_crate.png')
+        type(WoodenCrate()): os.path.join('Resources', 'wooden_crate.png'),
+        type(PoisonousMist()): os.path.join('Resources', 'poisonous_mist.png'),
     }
 
     def __init__(self, father: GameWindow, cell, x, y):

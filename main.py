@@ -4,6 +4,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 
 from GUI import GameWindow
+from menu_window import MenuWindow
 from game import Game
 
 
@@ -11,7 +12,7 @@ def main():
     level = ['           ',
              '#      x   ',
              ' # # # ### ',
-             ' #     x   ',
+             ' #  x  x   ',
              ' #     x   ',
              ' #     x   ',
              '    #      ',
@@ -19,6 +20,7 @@ def main():
     game = Game(level)
     app = QApplication(sys.argv)
     window = GameWindow(game)
+    # menu_window = MenuWindow()
     sys.exit(app.exec())
 
 

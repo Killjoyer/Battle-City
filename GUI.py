@@ -25,56 +25,66 @@ class GameWindow(QMainWindow):
             self.tanks[owner] = TankVisualisation(self, tank)
         self.show()
         self.timer = QTimer()
-        self.timer.setInterval(WindowSettings.TimerInteerval)
+        self.timer.setInterval(WindowSettings.TimerInterval)
         self.timer.timeout.connect(self.game_update)
         self.timer.start()
         self.paused = 0
 
     def game_update(self):
-        try:
-            for owner, tank in self.tanks.items():
-                if (abs(tank.tank.x - tank.actual_x / self.cell_size) > 1e-8 or
-                        abs(tank.tank.y - tank.actual_y / self.cell_size) > 1e-8):
-                    tank.actual_x += (tank.moving_will *
-                                      tank.tank.speed * tank.tank.direction[0])
-                    tank.actual_y += (tank.moving_will *
-                                      tank.tank.speed * tank.tank.direction[1])
-                    # print(f'X - {tank.actual_x}, {tank.tank.x}',
-                    #       f'Y - {tank.actual_y}, {tank.tank.y}', sep='\n')
-                    tank.move(tank.actual_x, tank.actual_y)
-                else:
-                    tank.moving_will = MovingWills.Nowhere
-                tank.turn()
-        except Exception as e:
-            print(e)
+        for owner, tank in self.tanks.items():
+            if tank.ticks == 1:
+                print(f'logically x:{tank.tank.x} y:{tank.tank.y}',
+                      f'on screen x:{tank.actual_x} y:{tank.actual_y}',
+                      sep='\n')
+            if tank.ticks == 0 and tank.moves:
+                tank.tank.move(self.game.field, tank.moving_will)
+            if (abs(tank.tank.x - tank.actual_x / self.cell_size) > 1e-8 or
+                    abs(tank.tank.y - tank.actual_y / self.cell_size) > 1e-8):
+                # print(tank.ticks)
+                tank.actual_x += (tank.moving_will *
+                                  tank.tank.speed * tank.tank.direction[0])
+                tank.actual_y += (tank.moving_will *
+                                  tank.tank.speed * tank.tank.direction[1])
+                tank.move(tank.actual_x, tank.actual_y)
+                tank.ticks = (tank.ticks + 1) % tank.tick_mod
+            else:
+                tank.ticks = 0
+                tank.moving_will = MovingWills.Nowhere
+            tank.turn()
 
     def keyPressEvent(self, e: QKeyEvent):
         key = e.key()
         if key == Qt.Key_Escape:
             self.paused = (self.paused + 1) % 2
-            if self.paused:
-                self.timer.stop()
-                return
-            else:
-                self.timer.start()
-        elif key == Qt.Key_W:
-            # print('W pressed')
-            self.game.tanks[TankOwner.Human].move_forward(self.game.field)
+        if self.paused:
+            self.timer.stop()
+            return
+        else:
+            self.timer.start()
+        if key == Qt.Key_W:
+            if self.tanks[TankOwner.Human].moving_will == MovingWills.Backward:
+                print('SWAPPED DIRECTION')
+                self.tanks[TankOwner.Human].ticks = 0
+            self.tanks[TankOwner.Human].moves = True
             self.tanks[TankOwner.Human].moving_will = MovingWills.Forward
         elif key == Qt.Key_D:
-            # print('D pressed')
             if self.tanks[TankOwner.Human].moving_will != MovingWills.Nowhere:
                 return
             self.game.tanks[TankOwner.Human].turn_right()
         elif key == Qt.Key_A:
-            # print('A pressed')
             if self.tanks[TankOwner.Human].moving_will != MovingWills.Nowhere:
                 return
             self.game.tanks[TankOwner.Human].turn_left()
         elif key == Qt.Key_S:
-            # print('S pressed')
+            if self.tanks[TankOwner.Human].moving_will == MovingWills.Forward:
+                self.tanks[TankOwner.Human].ticks = 0
             self.tanks[TankOwner.Human].moving_will = MovingWills.Backward
-            self.game.tanks[TankOwner.Human].move_backward(self.game.field)
+            self.tanks[TankOwner.Human].moves = True
+
+    def keyReleaseEvent(self, e: QKeyEvent):
+        key = e.key()
+        if key == Qt.Key_W or key == Qt.Key_S:
+            self.tanks[TankOwner.Human].moves = False
 
 
 class TankVisualisation(QWidget):
@@ -86,9 +96,9 @@ class TankVisualisation(QWidget):
         self.father = father
         self.actual_x = tank.x * father.cell_size
         self.actual_y = tank.y * father.cell_size
+        self.moves = False
         self.moving_will = MovingWills.Nowhere
         self.angle = 0
-        # BRANCH "MASTER"
         self.q_trans = QTransform().rotate(self.angle)
         self.setParent(father)
         self.setGeometry(self.actual_x, self.actual_y,

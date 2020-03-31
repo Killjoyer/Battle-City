@@ -17,19 +17,6 @@ class MovingWills:
     Backward = -1
 
 
-class CellSize:
-    cell_size = 64
-
-
-class CellTextures:
-    Textures = {
-        type(BrickWall()): os.path.join('Resources', 'brick_wall.png'),
-        type(EmptyCell()): os.path.join('Resources', 'empty_cell.png'),
-        type(WoodenCrate()): os.path.join('Resources', 'wooden_crate.png'),
-        type(PoisonousMist()): os.path.join('Resources', 'poisonous_mist.png'),
-    }
-
-
 class TankOwner:
     Computer = 'computer'
     Human = 'human'
@@ -56,3 +43,17 @@ class Cells:
         'm': lambda: PoisonousMist(),
     }
 
+    CellSize = 64
+
+    Textures = {
+        type(BrickWall()): os.path.join('Resources', 'brick_wall.png'),
+        type(EmptyCell()): os.path.join('Resources', 'empty_cell.png'),
+        type(WoodenCrate()): os.path.join('Resources', 'wooden_crate.png'),
+        type(PoisonousMist()): os.path.join('Resources', 'poisonous_mist.png'),
+    }
+
+
+class WindowSettings:
+    Title = 'Battle Town'
+    IcoSource = os.path.join('Resources', 'icon.ico')
+    TimerInteerval = 25

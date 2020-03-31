@@ -1,4 +1,4 @@
-from direction import Direction
+from constants import Direction
 from field import Field
 from tank import Tank, TankType, TankOwner
 

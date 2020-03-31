@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys
+import sys, os
 
 from PyQt5.QtWidgets import QApplication
 
@@ -9,14 +9,8 @@ from game import Game
 
 
 def main():
-    level = ['           ',
-             '#      x   ',
-             ' # # # ### ',
-             ' #  x  x   ',
-             ' #     x   ',
-             ' #     x   ',
-             '    #      ',
-             '           ']
+    with open(os.path.join('Levels', '1.txt'), 'r') as f:
+        level = [i.strip() for i in f.readlines()]
     game = Game(level)
     app = QApplication(sys.argv)
     window = GameWindow(game)

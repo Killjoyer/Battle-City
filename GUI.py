@@ -4,15 +4,8 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QPixmap, QTransform, QIcon
 from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel
 
-from cells import EmptyCell, BrickWall, WoodenCrate, PoisonousMist
-from direction import Direction
+from constants import Direction, MovingWills, CellSize, CellTextures, TankTextures
 from tank import TankOwner, Tank
-
-
-class MovingWills:
-    Nowhere = 0
-    Forward = 1
-    Backward = -1
 
 
 class GameWindow(QMainWindow):
@@ -20,7 +13,7 @@ class GameWindow(QMainWindow):
         super().__init__()
         self.setWindowIcon(QIcon(os.path.join('Resources', 'icon.ico')))
         self.setWindowTitle('Battle Town')
-        self.cell_size = 64
+        self.cell_size = CellSize.cell_size
         self.game = game
         self.field = [
             [CellVisualisation(self, game.field.level[i][j], j, i) for j in
@@ -35,7 +28,7 @@ class GameWindow(QMainWindow):
             self.moving_wills[owner] = MovingWills.Nowhere
         self.show()
         self.timer = QTimer()
-        self.timer.setInterval(10)
+        self.timer.setInterval(25)
         self.timer.timeout.connect(self.game_update)
         self.timer.start()
         self.paused = 0
@@ -91,12 +84,13 @@ class TankVisualisation(QWidget):
         self.father = father
         self.actual_x = tank.x * father.cell_size
         self.actual_y = tank.y * father.cell_size
+        # self.moving_wiil =
         self.angle = 0
         self.q_trans = QTransform().rotate(self.angle)
         self.setParent(father)
         self.setGeometry(self.actual_x, self.actual_y,
                          father.cell_size, father.cell_size)
-        self.img_source = os.path.join('Resources', 'green_tank.png')
+        self.img_source = TankTextures.Textures[tank.type](tank.owner)
         self.img = QPixmap(self.img_source).scaled(father.cell_size,
                                                    father.cell_size)
         self.label = QLabel()
@@ -119,20 +113,13 @@ class TankVisualisation(QWidget):
 
 
 class CellVisualisation(QWidget):
-    Textures = {
-        type(BrickWall()): os.path.join('Resources', 'brick_wall.png'),
-        type(EmptyCell()): os.path.join('Resources', 'empty_cell.png'),
-        type(WoodenCrate()): os.path.join('Resources', 'wooden_crate.png'),
-        type(PoisonousMist()): os.path.join('Resources', 'poisonous_mist.png'),
-    }
-
     def __init__(self, father: GameWindow, cell, x, y):
         super().__init__()
         self.setParent(father)
         self.x = x * father.cell_size
         self.y = y * father.cell_size
         self.move(self.x, self.y)
-        self.img_source = CellVisualisation.Textures[type(cell)]
+        self.img_source = CellTextures.Textures[type(cell)]
         self.img = QPixmap(self.img_source)
         self.label = QLabel()
         self.label.setPixmap(self.img

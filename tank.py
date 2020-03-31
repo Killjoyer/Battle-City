@@ -1,18 +1,7 @@
 from enum import Enum
 
-from direction import Direction
+from constants import Direction, TankType, TankOwner
 from field import Field
-
-
-class TankOwner(Enum):
-    Computer = 0
-    Human = 1
-
-
-class TankType(Enum):
-    Default = {'speed': 1,
-               'shooting_rate': 10,
-               'damage': 10}
 
 
 class Tank:
@@ -21,6 +10,8 @@ class Tank:
         super().__init__()
         self.x = x
         self.y = y
+        self.type = tank_type
+        self.owner = owner
         self.speed = tank_type.value['speed']
         self.shooting_rate = tank_type.value['shooting_rate']
         self.damage = tank_type.value['damage']
@@ -76,7 +67,7 @@ class Tank:
         if direction == 1:
             self.move_forward(field)
         elif direction == -1:
-            self.move_forward(field)
+            self.move_backward(field)
 
 
 class Bullet:

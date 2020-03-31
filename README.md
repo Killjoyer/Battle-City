@@ -27,5 +27,5 @@ Necessary features:
 ## How to start playing
 
 1. Clone project or download `.zip`
-2. Write in terminal `python main.py` or `python3 main.py` while
-in game's directory
+2. Write in terminal `python main.py` or `python3 main.py` 
+while in game's directory

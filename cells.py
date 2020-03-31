@@ -27,6 +27,7 @@ class WoodenCrate(DestructibleCell):
     def __init__(self):
         super().__init__()
 
+
 class PoisonousMist(ImmortalCell):
     def __init__(self):
         super().__init__(True)

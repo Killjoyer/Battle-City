@@ -1,7 +1,7 @@
 import unittest
 
 from tank import Tank, TankType, TankOwner
-from direction import Direction
+from constants import Direction
 from field import Field
 
 

@@ -56,4 +56,4 @@ class Cells:
 class WindowSettings:
     Title = 'Battle Town'
     IcoSource = os.path.join('Resources', 'icon.ico')
-    TimerInteerval = 10
+    TimerInterval = 10

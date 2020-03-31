@@ -25,7 +25,7 @@ class GameWindow(QMainWindow):
             self.tanks[owner] = TankVisualisation(self, tank)
         self.show()
         self.timer = QTimer()
-        self.timer.setInterval(WindowSettings.TimerInteerval)
+        self.timer.setInterval(WindowSettings.TimerInterval)
         self.timer.timeout.connect(self.game_update)
         self.timer.start()
         self.paused = 0
@@ -56,12 +56,12 @@ class GameWindow(QMainWindow):
         key = e.key()
         if key == Qt.Key_Escape:
             self.paused = (self.paused + 1) % 2
-            if self.paused:
-                self.timer.stop()
-                return
-            else:
-                self.timer.start()
-        elif key == Qt.Key_W:
+        if self.paused:
+            self.timer.stop()
+            return
+        else:
+            self.timer.start()
+        if key == Qt.Key_W:
             self.tanks[TankOwner.Human].moves = True
             self.tanks[TankOwner.Human].moving_will = MovingWills.Forward
         elif key == Qt.Key_D:

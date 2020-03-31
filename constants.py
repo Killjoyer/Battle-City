@@ -57,3 +57,7 @@ class WindowSettings:
     Title = 'Battle Town'
     IcoSource = os.path.join('Resources', 'icon.ico')
     TimerInterval = 10
+
+
+class Bullets:
+    Texture = os.path.join('Resources', 'bullet.png')

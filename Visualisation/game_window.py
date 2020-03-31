@@ -56,7 +56,6 @@ class GameWindow(QMainWindow):
                 tank.tank.move(self.game.field, tank.moving_will)
             if (abs(tank.tank.x - tank.actual_x / self.cell_size) > 1e-8 or
                     abs(tank.tank.y - tank.actual_y / self.cell_size) > 1e-8):
-                # print(tank.ticks)
                 tank.actual_x += (tank.moving_will *
                                   tank.tank.speed * tank.tank.direction[0])
                 tank.actual_y += (tank.moving_will *
@@ -79,7 +78,6 @@ class GameWindow(QMainWindow):
             self.timer.start()
         if key == Qt.Key_W:
             if self.tanks[TankOwner.Human].moving_will == MovingWills.Backward:
-                print('SWAPPED DIRECTION')
                 self.tanks[TankOwner.Human].ticks = 0
             self.tanks[TankOwner.Human].moves = True
             self.tanks[TankOwner.Human].moving_will = MovingWills.Forward
@@ -96,6 +94,8 @@ class GameWindow(QMainWindow):
                 self.tanks[TankOwner.Human].ticks = 0
             self.tanks[TankOwner.Human].moving_will = MovingWills.Backward
             self.tanks[TankOwner.Human].moves = True
+        elif key == Qt.Key_Space:
+            self.tanks[TankOwner.Human].tank.shoot()
 
     def keyReleaseEvent(self, e: QKeyEvent):
         key = e.key()

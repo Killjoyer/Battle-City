@@ -3,6 +3,7 @@ class DestructibleCell:
         self.destructible = False
         self.passable = False
         self.health = health
+        self.overlays = False
 
     def destroy(self):
         pass
@@ -11,6 +12,7 @@ class DestructibleCell:
 class ImmortalCell:
     def __init__(self, passable):
         self.passable = passable
+        self.overlays = False
 
 
 class BrickWall(ImmortalCell):
@@ -31,3 +33,4 @@ class WoodenCrate(DestructibleCell):
 class PoisonousMist(ImmortalCell):
     def __init__(self):
         super().__init__(True)
+        self.overlays = True

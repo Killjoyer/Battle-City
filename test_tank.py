@@ -1,8 +1,8 @@
 import unittest
 
-from tank import Tank, TankType, TankOwner
 from constants import Direction
 from field import Field
+from tank import Tank, TankType, TankOwner
 
 
 class TankTests(unittest.TestCase):

@@ -1,10 +1,12 @@
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QKeyEvent, QPixmap, QTransform, QIcon
-from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel
+from PyQt5.QtGui import QKeyEvent, QIcon
+from PyQt5.QtWidgets import QMainWindow
 
-from constants import Direction, MovingWills, Cells, TankTextures, \
-    WindowSettings
-from tank import TankOwner, Tank
+from Visualisation.cell_visualisation import CellVisualisation
+from cells import EmptyCell
+from constants import MovingWills, Cells, WindowSettings
+from tank import TankOwner
+from Visualisation.tank_visualisation import TankVisualisation
 
 
 class GameWindow(QMainWindow):
@@ -14,15 +16,29 @@ class GameWindow(QMainWindow):
         self.setWindowTitle(WindowSettings.Title)
         self.cell_size = Cells.CellSize
         self.game = game
-        self.field = [
-            [CellVisualisation(self, game.field.level[i][j], j, i) for j in
-             range(self.game.field.width)] for i in range(game.field.height)]
+        self.field = []
+        self.overlaying = []
+        self.underlaying = []
+        for i in range(self.game.field.height):
+            self.field.append([0] * self.game.field.width)
+            for j in range(self.game.field.width):
+                if self.game.field.level[i][j].overlays:
+                    print('found 1 overlaying')
+                    self.overlaying.append((self.game.field.level[i][j], j, i))
+                    self.underlaying.append(CellVisualisation(self,
+                                                              EmptyCell(),
+                                                              j, i))
+                    continue
+                self.field[i][j] = CellVisualisation(self, self.game.field.level[i][j], j, i)
         self.setGeometry(300, 100,
                          game.field.width * self.cell_size,
                          game.field.height * self.cell_size)
         self.tanks = {}
         for owner, tank in game.tanks.items():
             self.tanks[owner] = TankVisualisation(self, tank)
+        for i in self.overlaying:
+
+            self.field[i[2]][i[1]] = CellVisualisation(self, *i)
         self.show()
         self.timer = QTimer()
         self.timer.setInterval(WindowSettings.TimerInterval)
@@ -85,57 +101,3 @@ class GameWindow(QMainWindow):
         key = e.key()
         if key == Qt.Key_W or key == Qt.Key_S:
             self.tanks[TankOwner.Human].moves = False
-
-
-class TankVisualisation(QWidget):
-    def __init__(self, father: GameWindow, tank: Tank):
-        super().__init__()
-        self.tank = tank
-        self.tick_mod = Cells.CellSize // tank.speed
-        self.ticks = 0
-        self.father = father
-        self.actual_x = tank.x * father.cell_size
-        self.actual_y = tank.y * father.cell_size
-        self.moves = False
-        self.moving_will = MovingWills.Nowhere
-        self.angle = 0
-        self.q_trans = QTransform().rotate(self.angle)
-        self.setParent(father)
-        self.setGeometry(self.actual_x, self.actual_y,
-                         father.cell_size, father.cell_size)
-        self.img_source = TankTextures.Textures[tank.type](tank.owner)
-        self.img = QPixmap(self.img_source).scaled(father.cell_size,
-                                                   father.cell_size)
-        self.label = QLabel()
-        self.label.setPixmap(self.img
-                             .transformed(self.q_trans))
-        self.label.setParent(self)
-        self.show()
-
-    def turn(self):
-        if self.tank.direction == Direction.Up:
-            self.angle = 0
-        elif self.tank.direction == Direction.Down:
-            self.angle = 180
-        elif self.tank.direction == Direction.Right:
-            self.angle = 90
-        else:
-            self.angle = 270
-        self.q_trans = QTransform().rotate(self.angle)
-        self.label.setPixmap(self.img.transformed(self.q_trans))
-
-
-class CellVisualisation(QWidget):
-    def __init__(self, father: GameWindow, cell, x, y):
-        super().__init__()
-        self.setParent(father)
-        self.x = x * father.cell_size
-        self.y = y * father.cell_size
-        self.move(self.x, self.y)
-        self.img_source = Cells.Textures[type(cell)]
-        self.img = QPixmap(self.img_source)
-        self.label = QLabel()
-        self.label.setPixmap(self.img
-                             .scaled(father.cell_size, father.cell_size))
-        self.label.setParent(self)
-        self.show()

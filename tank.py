@@ -1,5 +1,3 @@
-from enum import Enum
-
 from constants import Direction, TankType, TankOwner
 from field import Field
 
@@ -43,7 +41,7 @@ class Tank:
         if self.direction == Direction.Right and self.x >= field.width - 1:
             return
         if (not field.level[self.y + self.direction[1]][
-                self.x + self.direction[0]].passable):
+            self.x + self.direction[0]].passable):
             return
         self.x += self.direction[0]
         self.y += self.direction[1]
@@ -58,7 +56,7 @@ class Tank:
         if self.direction == Direction.Left and self.x >= field.width - 1:
             return
         if (not field.level[self.y - self.direction[1]][
-                self.x - self.direction[0]].passable):
+            self.x - self.direction[0]].passable):
             return
         self.x -= self.direction[0]
         self.y -= self.direction[1]

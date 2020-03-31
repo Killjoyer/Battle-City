@@ -10,7 +10,7 @@ class MenuWindow(QMainWindow):
         super().__init__()
         self.h = 500
         self.w = 350
-        self.title_lable = GameTitle(self, 25, 50)
+        self.title_label = GameTitle(self, 25, 50)
         self.play_button = MainMenuButton(self, 25, 150)
         self.settings_button = MainMenuButton(self, 25, 250)
         self.exit_button = MainMenuButton(self, 25, 350)
@@ -22,6 +22,7 @@ class MenuWindow(QMainWindow):
         if isinstance(o, MainMenuButton) and e.type() == QEvent.HoverEnter:
             print(f'hovered {o}')
         return super(self).eventFilter(o, e)
+
 
 class MainMenuButton(QPushButton):
     def __init__(self, father: MenuWindow, x, y):
@@ -42,6 +43,6 @@ class GameTitle(QLabel):
         super().__init__()
         self.setParent(father)
         self.setGeometry(x, y, father.w - 50, father.h // 6)
-        self.img = QPixmap(os.path.join('Resources', 'game_title.png'))
+        self.img = QPixmap(os.path.join('../Resources', 'game_title.png'))
         self.setPixmap(self.img.scaled(father.w - 50, father.h // 6))
         self.show()

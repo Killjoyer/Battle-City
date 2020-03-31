@@ -33,7 +33,6 @@ class GameWindow(QMainWindow):
     def game_update(self):
         try:
             for owner, tank in self.tanks.items():
-                if tank.ticks == 0 and tank.moving_will
                 if (abs(tank.tank.x - tank.actual_x / self.cell_size) > 1e-8 or
                         abs(tank.tank.y - tank.actual_y / self.cell_size) > 1e-8):
                     tank.actual_x += (tank.moving_will *

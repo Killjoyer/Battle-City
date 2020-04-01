@@ -25,7 +25,8 @@ class TankOwner:
 class TankType(Enum):
     Default = {'speed': 2,
                'shooting_rate': 10,
-               'damage': 10}
+               'damage': 25,
+               'health': 100}
 
 
 class TankTextures:

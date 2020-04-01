@@ -25,13 +25,12 @@ class GameWindow(QMainWindow):
                 if self.game.field.level[i][j].overlays:
                     print('found 1 overlaying')
                     self.overlaying.append((self.game.field.level[i][j], j, i))
-                    self.underlaying.append(CellVisualisation(self,
-                                                              EmptyCell(),
-                                                              j, i))
+                    self.underlaying.append(
+                        CellVisualisation(self, EmptyCell(), j, i)
+                    )
                     continue
-                self.field[i][j] = CellVisualisation(self,
-                                                     self.game.field.level[i][
-                                                         j], j, i)
+                self.field[i][j] = \
+                    CellVisualisation(self, self.game.field.level[i][j], j, i)
         self.setGeometry(300, 100,
                          game.field.width * self.cell_size,
                          game.field.height * self.cell_size)
@@ -51,6 +50,8 @@ class GameWindow(QMainWindow):
         try:
             for owner, tank in self.tanks.items():
                 tank.update_position()
+                for bullet in tank.bullets:
+                    bullet.update_position()
         except Exception as e:
             print(e)
 

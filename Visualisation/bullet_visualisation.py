@@ -1,10 +1,14 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel
 
-from constants import Bullets
+from constants import Bullets, MovingWills
 from tank import Bullet
+from Visualisation.moving_entity_visualisation import MovingEntityVisualisation
 
 
-class BulletVisualisation(QWidget):
+class BulletVisualisation(MovingEntityVisualisation):
     def __init__(self, father, bullet: Bullet):
-        super().__init__(father, bullet)
+        bullet.speed = 4
+        super().__init__(father, bullet, Bullets.Texture)
+        self.moves = True
+        self.moving_will = MovingWills.Forward

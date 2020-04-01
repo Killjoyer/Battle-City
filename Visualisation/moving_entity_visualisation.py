@@ -6,7 +6,7 @@ from moving_enity import MovingEntity
 
 
 class MovingEntityVisualisation(QWidget):
-    def __init__(self, father, wrapping_object: MovingEntity):
+    def __init__(self, father, wrapping_object: MovingEntity, texture: str):
         super().__init__()
         self.setParent(father)
         self.x = wrapping_object.x * father.cell_size
@@ -25,6 +25,8 @@ class MovingEntityVisualisation(QWidget):
                          father.cell_size, father.cell_size)
         self.label = QLabel()
         self.img = None
+        self.set_texture(texture)
+        self.adjust_direction()
         self.show()
 
     def set_texture(self, texture):
@@ -47,11 +49,6 @@ class MovingEntityVisualisation(QWidget):
         self.label.setPixmap(self.img.transformed(self.q_trans))
 
     def update_position(self):
-        if self.ticks == 1:
-            print(f'logically x:{self.wrapping_object.x}' +
-                  f' y:{self.wrapping_object.y}',
-                  f'on screen x:{self.screen_x} y:{self.screen_y}',
-                  sep='\n')
         if self.ticks == 0 and self.moves:
             self.wrapping_object.move(self.father.game.field, self.moving_will)
         if (abs(self.wrapping_object.x -

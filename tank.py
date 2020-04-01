@@ -12,11 +12,11 @@ class Tank(MovingEntity):
         self.speed = tank_type.value['speed']
         self.shooting_rate = tank_type.value['shooting_rate']
         self.damage = tank_type.value['damage']
+        self.health = tank_type.value['health']
         self.bullets = set()
 
     def shoot(self):
-        bullet = Bullet(self, self.x + self.direction[0],
-                        self.y + self.direction[1], self.direction)
+        bullet = Bullet(self, self.x, self.y, self.direction)
         self.bullets.add(bullet)
         return bullet
 
@@ -38,3 +38,4 @@ class Bullet(MovingEntity):
     def __init__(self, shooter: Tank, x: int, y: int, direction: Direction):
         super().__init__(x, y, direction)
         self.shooter = shooter
+

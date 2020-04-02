@@ -9,10 +9,13 @@ class MovingEntity:
         self.x = x
         self.y = y
 
+    def collision(self):
+        return
+
     def move_forward(self, field: Field):
         if (not field.level[self.y + self.direction[1]][
-            self.x + self.direction[0]].passable):
-            return
+                self.x + self.direction[0]].passable):
+            return self.collision()
         self.x += self.direction[0]
         self.y += self.direction[1]
 

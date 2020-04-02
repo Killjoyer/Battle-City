@@ -39,4 +39,3 @@ class Bullet(MovingEntity):
     def __init__(self, shooter: Tank, x: int, y: int, direction: Direction):
         super().__init__(x, y, direction)
         self.shooter = shooter
-

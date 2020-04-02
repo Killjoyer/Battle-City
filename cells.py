@@ -1,9 +1,16 @@
+class FieldCell:
+    def __init__(self, back_ground, active_ground=None, fore_ground=None):
+        self.back_ground = back_ground
+        self.active_ground = active_ground
+        self.fore_ground = fore_ground
+
+
 class DestructibleCell:
     def __init__(self, health=50):
-        self.destructible = False
+        self.destructible = True
         self.passable = False
-        self.health = health
         self.overlays = False
+        self.health = health
 
     def destroy(self):
         pass
@@ -11,6 +18,7 @@ class DestructibleCell:
 
 class ImmortalCell:
     def __init__(self, passable):
+        self.destructible = False
         self.passable = passable
         self.overlays = False
 

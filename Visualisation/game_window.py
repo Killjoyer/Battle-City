@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMainWindow
 
 from Visualisation.cell_visualisation import CellVisualisation
 from Visualisation.tank_visualisation import TankVisualisation
-from cells import EmptyCell
+from cells import EmptyCell, BrickWall
 from constants import MovingWills, Cells, WindowSettings
 from tank import TankOwner
 
@@ -16,27 +16,25 @@ class GameWindow(QMainWindow):
         self.setWindowTitle(WindowSettings.Title)
         self.cell_size = Cells.CellSize
         self.game = game
-        self.field = [[0] * (self.game.field.width + 2)]
-        self.overlaying = []
-        self.underlaying = []
+        self.field = [[0] * (self.game.field.width)]
+        self.fore_ground = []
+        self.active_ground = []
+        self.back_ground = []
         for i in range(0, self.game.field.height):
-            self.field.append([0] * (self.game.field.width))
+            self.field.append([0] * self.game.field.width)
             for j in range(0, self.game.field.width):
-                if self.game.field.level[i][j].overlays:
-                    self.overlaying.append((self.game.field.level[i][j], j, i))
-                    self.underlaying.append(
-                        CellVisualisation(self, EmptyCell(), j, i)
-                    )
+                cell = self.game.field.level[i][j]
+                if
+                if isinstance(cell, BrickWall):
+                    self.fore_ground.append((cell, j, i))
                     continue
-                self.field[i][j] = \
-                    CellVisualisation(self, self.game.field.level[i][j], j, i)
         self.setGeometry(300, 100,
                          game.field.width * self.cell_size,
                          game.field.height * self.cell_size)
         self.tanks = {}
         for owner, tank in game.tanks.items():
             self.tanks[owner] = TankVisualisation(self, tank)
-        for i in self.overlaying:
+        for i in self.fore_ground:
             self.field[i[2]][i[1]] = CellVisualisation(self, *i)
         self.show()
         self.timer = QTimer()

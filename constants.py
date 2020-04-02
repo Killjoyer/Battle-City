@@ -1,7 +1,8 @@
 import os
 from enum import Enum
 
-from cells import PoisonousMist, BrickWall, EmptyCell, WoodenCrate
+from tank import TankOwner, TankType, Tank
+from cells import PoisonousMist, BrickWall, EmptyCell, WoodenCrate, FieldCell
 
 
 class Direction:
@@ -39,12 +40,14 @@ class TankTextures:
 
 class Cells:
     Cells = {
-        'P': lambda: EmptyCell(),  # player position
+        'P': lambda x, y: FieldCell(EmptyCell(),
+                                    Tank(x, y,
+                                         Direction.Right, TankOwner.Human)),  # player position
 
-        '_': lambda: EmptyCell(),
-        '#': lambda: BrickWall(),
-        'x': lambda: WoodenCrate(),
-        'm': lambda: PoisonousMist(),
+        '_': lambda x, y: FieldCell(EmptyCell()),
+        '#': lambda x, y: FieldCell(EmptyCell(), None, BrickWall()),
+        'x': lambda x, y: FieldCell(EmptyCell(), None, WoodenCrate()),
+        'm': lambda x, y: FieldCell(EmptyCell(), None, PoisonousMist()),
     }
 
     CellSize = 64

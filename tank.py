@@ -13,6 +13,7 @@ class Tank(MovingEntity):
         self.shooting_rate = tank_type.value['shooting_rate']
         self.damage = tank_type.value['damage']
         self.health = tank_type.value['health']
+        self.cooldown = tank_type.value['cooldown']
         self.bullets = set()
 
     def shoot(self):

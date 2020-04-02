@@ -7,6 +7,6 @@ class Game:
     def __init__(self, level):
         self.field = Field(level)
         self.tanks = {
-            TankOwner.Human: Tank(0, 0, TankType.Default, Direction.Right,
+            TankOwner.Human: Tank(1, 1, TankType.Default, Direction.Right,
                                   TankOwner.Human)
         }

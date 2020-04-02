@@ -16,12 +16,12 @@ class GameWindow(QMainWindow):
         self.setWindowTitle(WindowSettings.Title)
         self.cell_size = Cells.CellSize
         self.game = game
-        self.field = []
+        self.field = [[0] * (self.game.field.width + 2)]
         self.overlaying = []
         self.underlaying = []
-        for i in range(self.game.field.height):
-            self.field.append([0] * self.game.field.width)
-            for j in range(self.game.field.width):
+        for i in range(0, self.game.field.height):
+            self.field.append([0] * (self.game.field.width))
+            for j in range(0, self.game.field.width):
                 if self.game.field.level[i][j].overlays:
                     print('found 1 overlaying')
                     self.overlaying.append((self.game.field.level[i][j], j, i))

@@ -1,7 +1,7 @@
 import os
+from enum import Enum
 
 from cells import PoisonousMist, BrickWall, EmptyCell, WoodenCrate
-from enum import Enum
 
 
 class Direction:
@@ -26,7 +26,8 @@ class TankType(Enum):
     Default = {'speed': 2,
                'shooting_rate': 10,
                'damage': 25,
-               'health': 100}
+               'health': 100,
+               'cooldown': 5, }  # seconds
 
 
 class TankTextures:

@@ -23,9 +23,7 @@ class MovingEntity:
         try:
             cell = field.level[self.y + self.direction[1]][
                         self.x + self.direction[0]]
-            if (MovingEntity.is_wall(
-                    field.level[self.y + self.direction[1]][
-                        self.x + self.direction[0]])):
+            if MovingEntity.is_wall(cell):
                 return self.collision()
             if (MovingEntity.has_activity(cell) and
                     cell.active_ground is not self):
@@ -36,10 +34,13 @@ class MovingEntity:
             print(e)
 
     def move_backward(self, field):
-        if (MovingEntity.is_wall(
-                field.level[self.y - self.direction[1]][
-                    self.x - self.direction[0]])):
-            return
+        cell = field.level[self.y - self.direction[1]][
+            self.x - self.direction[0]]
+        if MovingEntity.is_wall(cell):
+            return self.collision()
+        if (MovingEntity.has_activity(cell) and
+                cell.active_ground is not self):
+            return self.collision()
         self.x -= self.direction[0]
         self.y -= self.direction[1]
 

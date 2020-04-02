@@ -3,7 +3,7 @@ import sys, os
 
 from PyQt5.QtWidgets import QApplication
 
-from Visualisation.game_window import GameWindow
+from Interface.game_window import GameWindow
 from game import Game
 
 

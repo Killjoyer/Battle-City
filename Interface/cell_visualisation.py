@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel
 
-from Visualisation.tank_visualisation import TankVisualisation
+from Interface.tank_visualisation import TankVisualisation
 from constants import Cells
 
 

@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QWidget, QLabel
 
 from constants import Bullets, MovingWills
 from tank import Bullet
-from Visualisation.moving_entity_visualisation import MovingEntityVisualisation
+from Interface.moving_entity_visualisation import MovingEntityVisualisation
 
 
 class BulletVisualisation(MovingEntityVisualisation):

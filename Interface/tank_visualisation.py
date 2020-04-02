@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QTimer
 
-from Visualisation.bullet_visualisation import BulletVisualisation
-from Visualisation.moving_entity_visualisation import MovingEntityVisualisation
+from Interface.bullet_visualisation import BulletVisualisation
+from Interface.moving_entity_visualisation import MovingEntityVisualisation
 from constants import TankTextures
 from tank import Tank
 

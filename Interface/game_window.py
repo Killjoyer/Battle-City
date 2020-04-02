@@ -2,7 +2,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QIcon
 from PyQt5.QtWidgets import QMainWindow
 
-from Visualisation.cell_visualisation import FieldCellVisualisation
+from Interface.cell_visualisation import FieldCellVisualisation
 from constants import MovingWills, Cells, WindowSettings, TankOwner
 
 

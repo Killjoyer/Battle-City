@@ -8,44 +8,33 @@ class MovingEntity:
         self.x = x
         self.y = y
 
-    def collision(self):
+    def collision(self, collided_cell):
+        print(f'collided {self.x} {self.y} with {collided_cell.fore_ground}',
+              f'{collided_cell.active_ground}', sep=' ')
         return
 
     @staticmethod
-    def is_wall(cell):
-        return not (cell.fore_ground is None or cell.fore_ground.passable)
+    def is_not_wall(cell):
+        return cell.fore_ground is None or cell.fore_ground.passable
 
-    @staticmethod
-    def has_activity(cell):
+    def has_activity(self, cell):
         return cell.active_ground is not None
 
-    def move_forward(self, field):
+    def start_moving(self, field, d):
         try:
-            cell = field.level[self.y + self.direction[1]][
-                        self.x + self.direction[0]]
-            if MovingEntity.is_wall(cell):
-                return self.collision()
-            if (MovingEntity.has_activity(cell) and
-                    cell.active_ground is not self):
-                return self.collision()
+            cell = field.level[self.y + d * self.direction[1]][
+                self.x + d * self.direction[0]]
+            if not MovingEntity.is_not_wall(cell):
+                return self.collision(cell)
+            if self.has_activity(cell):
+                return self.collision(cell)
             self.x += self.direction[0]
             self.y += self.direction[1]
+            cell.active_ground = self
         except Exception as e:
             print(e)
 
-    def move_backward(self, field):
-        cell = field.level[self.y - self.direction[1]][
-            self.x - self.direction[0]]
-        if MovingEntity.is_wall(cell):
-            return self.collision()
-        if (MovingEntity.has_activity(cell) and
-                cell.active_ground is not self):
-            return self.collision()
-        self.x -= self.direction[0]
-        self.y -= self.direction[1]
-
-    def move(self, field, direction: int):
-        if direction == 1:
-            self.move_forward(field)
-        elif direction == -1:
-            self.move_backward(field)
+    def stop_moving(self, field, d):
+        cell = field.level[self.y - d * self.direction[1]][
+            self.x - d * self.direction[0]]
+        cell.active_ground = None

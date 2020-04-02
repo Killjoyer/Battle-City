@@ -32,8 +32,18 @@ class Tank(MovingEntity):
         y = -self.direction[0]
         self.direction = (x, y)
 
+    def has_activity(self, cell):
+        return (cell.active_ground is not None and
+                ((isinstance(cell.active_ground, Tank)
+                  and cell.active_ground is not self) or
+                 (cell.active_ground.shooter is not self)))
+
 
 class Bullet(MovingEntity):
     def __init__(self, shooter: Tank, x: int, y: int, direction):
         super().__init__(x, y, direction)
         self.shooter = shooter
+
+    def has_activity(self, cell):
+        return (cell.active_ground is not None and
+                cell.active_ground is not self.shooter)

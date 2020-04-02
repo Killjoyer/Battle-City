@@ -8,7 +8,7 @@ from game import Game
 
 
 def main():
-    with open(os.path.join('Levels', '3.txt'), 'r') as f:
+    with open(os.path.join('Levels', '0.txt'), 'r') as f:
         level = [i.strip() for i in f.readlines()]
     game = Game(level)
     app = QApplication(sys.argv)

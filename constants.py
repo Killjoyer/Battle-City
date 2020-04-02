@@ -1,8 +1,8 @@
 import os
 from enum import Enum
 
-from tank import TankOwner, TankType, Tank
 from cells import PoisonousMist, BrickWall, EmptyCell, WoodenCrate, FieldCell
+from tank import Tank
 
 
 class Direction:
@@ -42,7 +42,10 @@ class Cells:
     Cells = {
         'P': lambda x, y: FieldCell(EmptyCell(),
                                     Tank(x, y,
-                                         Direction.Right, TankOwner.Human)),  # player position
+                                         TankType.Default,
+                                         Direction.Right,
+                                         TankOwner.Human)),
+        # player position
 
         '_': lambda x, y: FieldCell(EmptyCell()),
         '#': lambda x, y: FieldCell(EmptyCell(), None, BrickWall()),

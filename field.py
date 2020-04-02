@@ -1,5 +1,4 @@
 from constants import Cells
-from cells import FieldCell, EmptyCell, BrickWall
 
 
 class Field:
@@ -10,12 +9,14 @@ class Field:
         self.level = self.read_level(start_position)
 
     def read_level(self, start_position):
-        field = [[Cells.Cells['#']() for i in range(self.width)]]
+        field = [[Cells.Cells['#'](0, 0) for i in range(self.width)]]
         for i in range(1, self.height - 1):
-            field.append([BrickWall()] + [''] * (self.width - 2) + [BrickWall()])
+            field.append(
+                [Cells.Cells['#'](0, 0)] + [''] * (self.width - 2) + [
+                    Cells.Cells['#'](0, 0)])
             for j in range(1, self.width - 1):
-                field[i][j] = Cells.Cells[start_position[i - 1][j - 1]]()
+                field[i][j] = Cells.Cells[start_position[i - 1][j - 1]](j, i)
                 if field[i][j].active_ground is not None:
-                    self.player_pos = (j, i)
-        field.append([BrickWall() for i in range(self.width)])
+                    self.player_pos = (i, j)
+        field.append([Cells.Cells['#'](0, 0) for i in range(self.width)])
         return field

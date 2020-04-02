@@ -1,11 +1,9 @@
-from constants import Direction, TankType, TankOwner
-from field import Field
 from moving_enity import MovingEntity
 
 
 class Tank(MovingEntity):
-    def __init__(self, x: int, y: int, tank_type: TankType,
-                 direction: Direction, owner: TankOwner):
+    def __init__(self, x: int, y: int, tank_type,
+                 direction, owner):
         super().__init__(x, y, direction)
         self.type = tank_type
         self.owner = owner
@@ -36,6 +34,6 @@ class Tank(MovingEntity):
 
 
 class Bullet(MovingEntity):
-    def __init__(self, shooter: Tank, x: int, y: int, direction: Direction):
+    def __init__(self, shooter: Tank, x: int, y: int, direction):
         super().__init__(x, y, direction)
         self.shooter = shooter

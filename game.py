@@ -1,5 +1,5 @@
 from field import Field
-from tank import TankOwner
+from constants import TankOwner
 
 
 class Game:

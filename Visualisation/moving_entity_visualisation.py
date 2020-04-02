@@ -49,21 +49,24 @@ class MovingEntityVisualisation(QWidget):
         self.label.setPixmap(self.img.transformed(self.q_trans))
 
     def update_position(self):
-        if self.ticks == 0 and self.moves:
-            self.wrapping_object.move(self.father.game.field, self.moving_will)
-        if (abs(self.wrapping_object.x -
-                self.screen_x / self.father.cell_size) > 1e-8 or
-                abs(self.wrapping_object.y -
-                    self.screen_y / self.father.cell_size) > 1e-8):
-            self.screen_x += (self.moving_will *
-                              self.wrapping_object.speed *
-                              self.wrapping_object.direction[0])
-            self.screen_y += (self.moving_will *
-                              self.wrapping_object.speed *
-                              self.wrapping_object.direction[1])
-            self.move(self.screen_x, self.screen_y)
-            self.ticks = (self.ticks + 1) % self.tick_mod
-        else:
-            self.ticks = 0
-            self.moving_will = MovingWills.Nowhere
-        self.adjust_direction()
+        try:
+            if self.ticks == 0 and self.moves:
+                self.wrapping_object.move(self.father.game.field, self.moving_will)
+            if (abs(self.wrapping_object.x -
+                    self.screen_x / self.father.cell_size) > 1e-8 or
+                    abs(self.wrapping_object.y -
+                        self.screen_y / self.father.cell_size) > 1e-8):
+                self.screen_x += (self.moving_will *
+                                  self.wrapping_object.speed *
+                                  self.wrapping_object.direction[0])
+                self.screen_y += (self.moving_will *
+                                  self.wrapping_object.speed *
+                                  self.wrapping_object.direction[1])
+                self.move(self.screen_x, self.screen_y)
+                self.ticks = (self.ticks + 1) % self.tick_mod
+            else:
+                self.ticks = 0
+                self.moving_will = MovingWills.Nowhere
+            self.adjust_direction()
+        except Exception as e:
+            print(e)

@@ -39,6 +39,8 @@ class TankTextures:
 
 class Cells:
     Cells = {
+        'P': lambda: EmptyCell(),  # player position
+
         '_': lambda: EmptyCell(),
         '#': lambda: BrickWall(),
         'x': lambda: WoodenCrate(),

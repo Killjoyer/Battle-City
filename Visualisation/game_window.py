@@ -23,7 +23,6 @@ class GameWindow(QMainWindow):
             self.field.append([0] * (self.game.field.width))
             for j in range(0, self.game.field.width):
                 if self.game.field.level[i][j].overlays:
-                    print('found 1 overlaying')
                     self.overlaying.append((self.game.field.level[i][j], j, i))
                     self.underlaying.append(
                         CellVisualisation(self, EmptyCell(), j, i)

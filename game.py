@@ -12,3 +12,6 @@ class Game:
                                   Direction.Right,
                                   TankOwner.Human)
         }
+        self.enemies = [Tank(i, j, TankType.Default, Direction.Right,
+                             TankOwner.Computer) for i, j in
+                        self.field.enemies]

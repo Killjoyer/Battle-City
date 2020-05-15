@@ -20,7 +20,7 @@ class GameWindow(QMainWindow):
         self.overlaying = []
         self.underlaying = []
         for i in range(0, self.game.field.height):
-            self.field.append([0] * (self.game.field.width))
+            self.field.append([0] * self.game.field.width)
             for j in range(0, self.game.field.width):
                 if self.game.field.level[i][j].overlays:
                     self.overlaying.append((self.game.field.level[i][j], j, i))
@@ -30,12 +30,15 @@ class GameWindow(QMainWindow):
                     continue
                 self.field[i][j] = \
                     CellVisualisation(self, self.game.field.level[i][j], j, i)
-        self.setGeometry(300, 100,
-                         game.field.width * self.cell_size,
-                         game.field.height * self.cell_size)
+        self.setGeometry(300, 100, 1, 1)
+        self.setFixedSize(game.field.width * self.cell_size,
+                          game.field.height * self.cell_size)
         self.tanks = {}
+        self.enemies = []
         for owner, tank in game.tanks.items():
             self.tanks[owner] = TankVisualisation(self, tank)
+        for tank in game.enemies:
+            self.enemies.append(TankVisualisation(self, tank))
         for i in self.overlaying:
             self.field[i[2]][i[1]] = CellVisualisation(self, *i)
         self.show()
@@ -49,7 +52,25 @@ class GameWindow(QMainWindow):
         try:
             for owner, tank in self.tanks.items():
                 tank.update_position()
+                if tank.wrapping_object.is_dead:
+                    self.tanks.pop(tank)
+                    tank.hide()
+                    continue
                 for bullet in tank.bullets:
+                    if bullet.wrapping_object.is_dead:
+                        tank.bullets.remove(bullet)
+                        bullet.hide()
+                    bullet.update_position()
+            for tank in self.enemies:
+                if tank.wrapping_object.is_dead:
+                    self.enemies.remove(tank)
+                    tank.hide()
+                    continue
+                tank.update_position()
+                for bullet in tank.bullets:
+                    if bullet.wrapping_object.is_dead:
+                        tank.bullets.remove(bullet)
+                        bullet.hide()
                     bullet.update_position()
         except Exception as e:
             print(e)

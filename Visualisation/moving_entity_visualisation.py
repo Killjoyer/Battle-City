@@ -50,7 +50,8 @@ class MovingEntityVisualisation(QWidget):
 
     def update_position(self):
         if self.ticks == 0 and self.moves:
-            self.wrapping_object.move(self.father.game.field, self.moving_will)
+            col = self.wrapping_object.move(self.father.game,
+                                            self.moving_will)
         if (abs(self.wrapping_object.x -
                 self.screen_x / self.father.cell_size) > 1e-8 or
                 abs(self.wrapping_object.y -

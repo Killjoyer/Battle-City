@@ -33,14 +33,14 @@ class TankType(Enum):
 class TankTextures:
     Textures = {
         TankType.Default: lambda tank_owner:
-        os.path.join('Resources', f'default_tank_{tank_owner}.png')
+        os.path.join('Resources', f'default_tank_{tank_owner}.png'),
     }
 
 
 class Cells:
     Cells = {
         'P': lambda: EmptyCell(),  # player position
-
+        'E': lambda: EmptyCell(),
         '_': lambda: EmptyCell(),
         '#': lambda: BrickWall(),
         'x': lambda: WoodenCrate(),

@@ -1,11 +1,9 @@
 from PyQt5.QtCore import QTimer
-from PyQt5.QtGui import QTransform, QPixmap
-from PyQt5.QtWidgets import QWidget, QLabel
 
-from constants import Cells, MovingWills, TankTextures, Direction
-from tank import Tank
-from Visualisation.moving_entity_visualisation import MovingEntityVisualisation
 from Visualisation.bullet_visualisation import BulletVisualisation
+from Visualisation.moving_entity_visualisation import MovingEntityVisualisation
+from constants import TankTextures
+from tank import Tank
 
 
 class TankVisualisation(MovingEntityVisualisation):
@@ -24,7 +22,8 @@ class TankVisualisation(MovingEntityVisualisation):
 
     def shoot(self):
         if self.can_shoot:
-            bullet = BulletVisualisation(self.father, self.wrapping_object.shoot())
+            bullet = BulletVisualisation(self.father,
+                                         self.wrapping_object.shoot())
             bullet.stackUnder(self)
             self.bullets.add(bullet)
             self.can_shoot = False

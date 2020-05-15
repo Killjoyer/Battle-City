@@ -1,5 +1,4 @@
 from constants import Direction, TankType, TankOwner
-from field import Field
 from moving_enity import MovingEntity
 
 
@@ -21,8 +20,17 @@ class Tank(MovingEntity):
         self.bullets.add(bullet)
         return bullet
 
-    def die(self):
-        pass
+    def die(self, game):
+        self.is_dead = True
+        if self.owner == TankOwner.Human:
+            game.tanks.pop(TankOwner.Human)
+        else:
+            game.enemies.remove(self)
+
+    def decrease_health(self, game, damage: int ):
+        self.health -= damage
+        if self.health <= 0:
+            self.die(game)
 
     def turn_right(self):
         x = -self.direction[1]
@@ -34,8 +42,27 @@ class Tank(MovingEntity):
         y = -self.direction[0]
         self.direction = (x, y)
 
+    def collision(self, x, y, entity, game):
+        if isinstance(entity, Bullet):
+            if entity.shooter != self:
+                self.is_dead = True
+                return True
+
 
 class Bullet(MovingEntity):
     def __init__(self, shooter: Tank, x: int, y: int, direction: Direction):
         super().__init__(x, y, direction)
         self.shooter = shooter
+
+    def collision(self, x, y, entity, game):
+        if isinstance(entity, Tank):
+            if entity != self.shooter:
+                self.die(game)
+                entity.decrease_health(game, self.shooter.damage)
+                return True
+        else:
+            self.die(game)
+
+    def die(self, game):
+        self.is_dead = True
+        self.shooter.bullets.remove(self)

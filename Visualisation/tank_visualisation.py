@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QWidget, QLabel
 from Visualisation.bullet_visualisation import BulletVisualisation
 from Visualisation.moving_entity_visualisation import MovingEntityVisualisation
 from constants import TankTextures, Cells
-from tank import Tank
+from tank import Tank, Debuff
 
 
 class TankVisualisation(MovingEntityVisualisation):
@@ -14,10 +14,11 @@ class TankVisualisation(MovingEntityVisualisation):
         self.bullets = set()
         self.can_shoot = True
         self.shooting_cd = QTimer()
-        self.shooting_cd.setInterval(self.wrapping_object.cooldown * 250)
+        self.shooting_cd.setInterval(self.wrapping_object.cooldown * 1000)
         self.shooting_cd.timeout.connect(self._drop_cd)
         self.show()
         self.bars = [HealthBar(self), CoolDownBar(self)]
+        self.active_debuffs = []
 
     def update_bars(self):
         for bar in self.bars:
@@ -35,6 +36,36 @@ class TankVisualisation(MovingEntityVisualisation):
             self.bullets.add(bullet)
             self.can_shoot = False
             self.shooting_cd.start()
+
+    def treat_debuffs(self):
+        for debuff in self.wrapping_object.active_debuffs:
+            self.active_debuffs.append(DebuffVisualisation(self, debuff))
+
+        self.wrapping_object.active_debuffs = []
+
+
+class DebuffVisualisation(QWidget):
+    def __init__(self, tank, debuff: Debuff):
+        super().__init__(tank)
+        self.tank = tank
+        self.debuff = debuff
+        self.duration = QTimer()
+        self.duration.setInterval(debuff.duration * 1000)
+        self.duration.timeout.connect(self.stop)
+        self.duration.start()
+        self.ticks = QTimer()
+        self.ticks.setInterval(500)
+        self.ticks.timeout.connect(self.do_tick)
+        self.ticks.start()
+
+    def do_tick(self):
+        self.tank.wrapping_object.decrease_health(self.tank.parent(),
+                                                  self.debuff.damage)
+
+    def stop(self):
+        self.tank.active_debuffs.remove(self)
+        self.ticks.stop()
+        self.duration.stop()
 
 
 class Bar(QWidget):
@@ -75,6 +106,6 @@ class CoolDownBar(Bar):
         self.max_cd = tank.shooting_cd.interval()
         super().__init__(tank, (180, 180, 180),
                          lambda: (self.max_cd -
-                         tank.shooting_cd.remainingTime()) /
-                         self.max_cd, 0, Cells.CellSize // 10,
+                                  tank.shooting_cd.remainingTime()) /
+                                 self.max_cd, 0, Cells.CellSize // 10,
                          Cells.CellSize // 25)

@@ -54,6 +54,7 @@ class GameWindow(QMainWindow):
         try:
             for owner, tank in self.tanks.items():
                 tank.update_bars()
+                tank.treat_debuffs()
                 if tank.wrapping_object.is_dead:
                     self.tanks.pop(tank)
                     tank.hide()
@@ -62,6 +63,7 @@ class GameWindow(QMainWindow):
                 self.update_bullets(tank)
             for tank in self.enemies:
                 tank.update_bars()
+                tank.treat_debuffs()
                 tank.shoot()
                 if tank.wrapping_object.is_dead:
                     self.enemies.remove(tank)

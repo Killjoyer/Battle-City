@@ -23,24 +23,45 @@ class TankOwner:
 
 
 class TankType(Enum):
-    Default = {'speed': 2,
-               'shooting_rate': 10,
-               'damage': 10,
-               'health': 100,
-               'cooldown': 5, }  # seconds
+    Default = {
+        'speed': 2,
+        'damage': 10,
+        'health': 100,
+        'cooldown': 3,  # seconds
+        'debuff': None
+    }
+    Flaming = {
+        'speed': 2,
+        'damage': 5,
+        'health': 80,
+        'cooldown': 5,
+        'debuff': {
+            'name': 'On fire!',
+            'duration': 5,  # seconds
+            'damage': 5
+        }
+    }
 
 
 class TankTextures:
     Textures = {
         TankType.Default: lambda tank_owner:
         os.path.join('Resources', f'default_tank_{tank_owner}.png'),
+        TankType.Flaming: lambda tank_owner:
+        os.path.join('Resources', f'flaming_tank_{tank_owner}.png'),
     }
 
 
 class Cells:
+    GeneratingTypes = {
+        'E': TankType.Default,
+        'F': TankType.Flaming,
+    }
+
     Cells = {
         'P': lambda: EmptyCell(),  # player position
         'E': lambda: EmptyCell(),
+        'F': lambda: EmptyCell(),
         '_': lambda: EmptyCell(),
         '#': lambda: BrickWall(),
         'x': lambda: WoodenCrate(),

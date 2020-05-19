@@ -17,8 +17,11 @@ class Field:
             for j in range(1, self.width - 1):
                 if start_position[i - 1][j - 1] == 'P':
                     self.player_pos = (j, i)
-                if start_position[i - 1][j - 1] == 'E':
-                    self.enemies.append((j, i))
+                if (start_position[i - 1][j - 1] in
+                        Cells.GeneratingTypes.keys()):
+                    self.enemies.append((j, i,
+                                         Cells.GeneratingTypes[
+                                             start_position[i - 1][j - 1]]))
                 field[i][j] = Cells.Cells[start_position[i - 1][j - 1]]()
         field.append([Cells.Cells['#']() for i in range(self.width)])
         return field

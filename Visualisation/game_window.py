@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMainWindow
 
 from Visualisation.cell_visualisation import CellVisualisation
 from Visualisation.cell_visualisation import DestructibleCellVisualisation
-from Visualisation.tank_visualisation import TankVisualisation
+from Visualisation.tank_visualisation import TankVisualisation, HealthBar
 from cells import EmptyCell
 from constants import MovingWills, Cells, WindowSettings
 from tank import TankOwner
@@ -20,6 +20,7 @@ class GameWindow(QMainWindow):
         self.field = [[0] * (self.game.field.width + 2)]
         self.overlaying = []
         self.underlaying = []
+
         for i in range(0, self.game.field.height):
             self.field.append([0] * self.game.field.width)
             for j in range(0, self.game.field.width):
@@ -52,6 +53,7 @@ class GameWindow(QMainWindow):
     def game_update(self):
         try:
             for owner, tank in self.tanks.items():
+                tank.update_bars()
                 if tank.wrapping_object.is_dead:
                     self.tanks.pop(tank)
                     tank.hide()
@@ -59,6 +61,7 @@ class GameWindow(QMainWindow):
                 tank.update_position()
                 self.update_bullets(tank)
             for tank in self.enemies:
+                tank.update_bars()
                 tank.shoot()
                 if tank.wrapping_object.is_dead:
                     self.enemies.remove(tank)

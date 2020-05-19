@@ -12,3 +12,4 @@ class BulletVisualisation(MovingEntityVisualisation):
         super().__init__(father, bullet, Bullets.Texture)
         self.moves = True
         self.moving_will = MovingWills.Forward
+        self.show()

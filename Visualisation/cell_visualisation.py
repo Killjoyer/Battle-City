@@ -33,13 +33,13 @@ class DestructibleCellVisualisation(CellVisualisation):
     def update_texture(self):
         if self.cell.is_dead:
             self.hide()
-        elif self.cell.health < 15:
+        elif self.cell.health <= 15:
             self.set_texture(Cells.Destruction[type(self.cell)][2])
             print('3')
-        elif self.cell.health < 30:
+        elif self.cell.health <= 30:
             print('2')
             self.set_texture(Cells.Destruction[type(self.cell)][1])
-        elif self.cell.health < 40:
+        elif self.cell.health <= 40:
             print('1')
             self.set_texture(Cells.Destruction[type(self.cell)][0])
 

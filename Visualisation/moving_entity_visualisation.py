@@ -27,7 +27,6 @@ class MovingEntityVisualisation(QWidget):
         self.img = None
         self.set_texture(texture)
         self.adjust_direction()
-        self.show()
 
     def set_texture(self, texture):
         self.img = QPixmap(texture).scaled(self.father.cell_size,

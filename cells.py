@@ -3,10 +3,14 @@ class DestructibleCell:
         self.destructible = False
         self.passable = False
         self.health = health
-        self.overlays = False
+        self.overlays = True
+        self.is_dead = False
 
-    def destroy(self):
-        pass
+    def decrease_health(self, dmg, game, x, y):
+        self.health -= dmg
+        if self.health <= 0:
+            self.is_dead = True
+            game.field.level[y][x] = EmptyCell()
 
 
 class ImmortalCell:

@@ -16,7 +16,7 @@ class MovingEntity:
         return
 
     def move(self, game, direction: int):
-        for tank in game.enemies:
+        for tank in game.enemies + list(game.tanks.values()):
             if (tank.x == self.x + direction * self.direction[0] and
                     tank.y == self.y + direction * self.direction[1]):
                 print('met tank at', tank.x, tank.y)

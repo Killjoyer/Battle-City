@@ -1,5 +1,6 @@
 from constants import Direction, TankType, TankOwner
 from moving_enity import MovingEntity
+from cells import DestructibleCell
 
 
 class Tank(MovingEntity):
@@ -59,9 +60,14 @@ class Bullet(MovingEntity):
             if entity != self.shooter:
                 self.die(game)
                 entity.decrease_health(game, self.shooter.damage)
-                return True
+                return 'tank', x, y
+        elif isinstance(entity, DestructibleCell):
+            entity.decrease_health(self.shooter.damage, game, x, y)
+            self.die(game)
+            return 'destr_cell', x, y
         else:
             self.die(game)
+            return 'indestr_cell', x, y
 
     def die(self, game):
         self.is_dead = True

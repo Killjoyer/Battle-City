@@ -49,6 +49,7 @@ class MovingEntityVisualisation(QWidget):
         self.label.setPixmap(self.img.transformed(self.q_trans))
 
     def update_position(self):
+        col = None
         if self.ticks == 0 and self.moves:
             col = self.wrapping_object.move(self.father.game,
                                             self.moving_will)
@@ -68,3 +69,4 @@ class MovingEntityVisualisation(QWidget):
             self.ticks = 0
             self.moving_will = MovingWills.Nowhere
         self.adjust_direction()
+        return col

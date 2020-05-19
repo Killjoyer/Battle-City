@@ -25,7 +25,7 @@ class TankOwner:
 class TankType(Enum):
     Default = {'speed': 2,
                'shooting_rate': 10,
-               'damage': 25,
+               'damage': 10,
                'health': 100,
                'cooldown': 5, }  # seconds
 
@@ -54,6 +54,14 @@ class Cells:
         type(EmptyCell()): os.path.join('Resources', 'empty_cell.png'),
         type(WoodenCrate()): os.path.join('Resources', 'wooden_crate.png'),
         type(PoisonousMist()): os.path.join('Resources', 'poisonous_mist.png'),
+    }
+
+    Destruction = {
+        type(WoodenCrate()): [
+            os.path.join('Resources', 'wooden_crate_1.png'),
+            os.path.join('Resources', 'wooden_crate_2.png'),
+            os.path.join('Resources', 'wooden_crate_3.png'),
+        ]
     }
 
 

@@ -3,6 +3,7 @@ from PyQt5.QtGui import QKeyEvent, QIcon
 from PyQt5.QtWidgets import QMainWindow
 
 from Visualisation.cell_visualisation import CellVisualisation
+from Visualisation.cell_visualisation import DestructibleCellVisualisation
 from Visualisation.tank_visualisation import TankVisualisation
 from cells import EmptyCell
 from constants import MovingWills, Cells, WindowSettings
@@ -40,7 +41,7 @@ class GameWindow(QMainWindow):
         for tank in game.enemies:
             self.enemies.append(TankVisualisation(self, tank))
         for i in self.overlaying:
-            self.field[i[2]][i[1]] = CellVisualisation(self, *i)
+            self.field[i[2]][i[1]] = DestructibleCellVisualisation(self, *i)
         self.show()
         self.timer = QTimer()
         self.timer.setInterval(WindowSettings.TimerInterval)
@@ -51,29 +52,31 @@ class GameWindow(QMainWindow):
     def game_update(self):
         try:
             for owner, tank in self.tanks.items():
-                tank.update_position()
                 if tank.wrapping_object.is_dead:
                     self.tanks.pop(tank)
                     tank.hide()
                     continue
-                for bullet in tank.bullets:
-                    if bullet.wrapping_object.is_dead:
-                        tank.bullets.remove(bullet)
-                        bullet.hide()
-                    bullet.update_position()
+                tank.update_position()
+                self.update_bullets(tank)
             for tank in self.enemies:
+                tank.shoot()
                 if tank.wrapping_object.is_dead:
                     self.enemies.remove(tank)
                     tank.hide()
                     continue
                 tank.update_position()
-                for bullet in tank.bullets:
-                    if bullet.wrapping_object.is_dead:
-                        tank.bullets.remove(bullet)
-                        bullet.hide()
-                    bullet.update_position()
+                self.update_bullets(tank)
         except Exception as e:
             print(e)
+
+    def update_bullets(self, tank):
+        for bullet in tank.bullets:
+            col = bullet.update_position()
+            if bullet.wrapping_object.is_dead:
+                if col and col[0] == 'destr_cell':
+                    self.field[col[2]][col[1]].update_texture()
+                tank.bullets.remove(bullet)
+                bullet.hide()
 
     def keyPressEvent(self, e: QKeyEvent):
         key = e.key()

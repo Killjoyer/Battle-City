@@ -2,6 +2,7 @@ from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QIcon
 from PyQt5.QtWidgets import QMainWindow
 
+from Visualisation.bonus_visualisation import BonusVisualisation
 from Visualisation.cell_visualisation import CellVisualisation
 from Visualisation.cell_visualisation import DestructibleCellVisualisation
 from Visualisation.tank_visualisation import TankVisualisation
@@ -50,29 +51,42 @@ class GameWindow(QMainWindow):
         self.timer.start()
         self.paused = 0
         self.bullets = set()
+        self.drawn_bonuses = {}
 
     def game_update(self):
         try:
             self.update_bullets()
+            self.update_bonuses()
+            self.game.decide_to_spawn_bonus()
             for owner, tank in self.tanks.items():
-                tank.update_bars()
-                tank.treat_debuffs()
+                self.update_tank(tank)
                 if tank.wrapping_object.is_dead:
                     self.tanks.pop(tank)
                     tank.hide()
                     continue
-                tank.update_position()
             for tank in self.enemies:
-                tank.update_bars()
-                tank.treat_debuffs()
+                self.update_tank(tank)
                 tank.shoot()
                 if tank.wrapping_object.is_dead:
                     self.enemies.remove(tank)
                     tank.hide()
                     continue
-                tank.update_position()
         except Exception as e:
-            pass  # print(e)
+            print(e)
+
+    def update_tank(self, tank):
+        tank.update_bars()
+        tank.treat_debuffs()
+        tank.update_position()
+
+    def update_bonuses(self):
+        for bonus in self.game.active_bonuses:
+            if bonus not in self.drawn_bonuses.keys():
+                self.drawn_bonuses[bonus] = BonusVisualisation(self, bonus)
+        for bonus in self.drawn_bonuses.values():
+            if bonus.bonus.is_dead:
+                bonus.hide()
+                self.drawn_bonuses.pop(bonus.bonus)
 
     def update_bullets(self):
         for bullet in self.bullets:

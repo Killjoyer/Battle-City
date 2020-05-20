@@ -3,8 +3,9 @@ from PyQt5.QtWidgets import QWidget, QLabel
 
 from Visualisation.bullet_visualisation import BulletVisualisation
 from Visualisation.moving_entity_visualisation import MovingEntityVisualisation
-from constants import TankTextures, Cells
-from tank import Tank, Debuff
+from constants import TankTextures, Cells, Bonuses
+from tank import Tank
+from bonus import Buff
 
 
 class TankVisualisation(MovingEntityVisualisation):
@@ -89,16 +90,17 @@ class CoolDownBar(Bar):
 class DebuffBar(Bar):
     def __init__(self, tank, debuff):
         self.max_cd = debuff.duration.interval()
-        if debuff.debuff.name == 'On fire!':
-            color = (200, 59, 59)
+        color = Bonuses.BuffsColors[debuff.debuff.name]
         super().__init__(tank, color,
                          lambda: debuff.duration.remainingTime() / self.max_cd,
-                         0, Cells.CellSize - Cells.CellSize//25,
+                         0,
+                         Cells.CellSize - Cells.CellSize//25 -
+                         len(tank.active_debuffs) * Cells.CellSize//25,
                          Cells.CellSize//25)
 
 
 class DebuffVisualisation(QWidget):
-    def __init__(self, tank, debuff: Debuff):
+    def __init__(self, tank, debuff: Buff):
         super().__init__(tank)
         self.tank = tank
         self.debuff = debuff

@@ -16,21 +16,13 @@ class MovingEntity:
         return
 
     def move(self, game, direction: int):
+        new_x = self.x + direction * self.direction[0]
+        new_y = self.y + direction * self.direction[1]
         for tank in game.enemies + list(game.tanks.values()):
-            if (tank.x == self.x + direction * self.direction[0] and
-                    tank.y == self.y + direction * self.direction[1]):
-                print('met tank at', tank.x, tank.y)
-                return self.collision(self.x + direction * self.direction[0],
-                                      self.y + direction * self.direction[1],
-                                      tank, game)
-        if (not game.field.level[self.y + direction * self.direction[1]][
-                self.x + direction * self.direction[0]].passable):
-            print('met not passable ')
-            return self.collision(self.x + direction * self.direction[0],
-                                  self.y + direction * self.direction[1],
-                                  game.field.level[
-                                      self.y + direction * self.direction[1]][
-                                      self.x + direction * self.direction[0]],
+            if tank.x == new_x and tank.y == new_y:
+                return self.collision(new_x, new_y, tank, game)
+        if not game.field.level[new_y][new_x].passable:
+            return self.collision(new_x, new_y,game.field.level[new_y][new_x],
                                   game)
-        self.x += direction * self.direction[0]
-        self.y += direction * self.direction[1]
+        self.x = new_x
+        self.y = new_y

@@ -1,3 +1,4 @@
+from bonus import Buff, Bonus
 from cells import DestructibleCell
 from constants import Direction, TankType, TankOwner
 from moving_enity import MovingEntity
@@ -13,9 +14,10 @@ class Tank(MovingEntity):
         self.speed = tank_type.value['speed']
         self.damage = tank_type.value['damage']
         self.health = tank_type.value['health']
+        self.max_health = self.health
         self.cooldown = tank_type.value['cooldown']
         if tank_type.value['debuff']:
-            self.debuff = Debuff(tank_type.value['debuff'])
+            self.debuff = Buff(tank_type.value['debuff'])
         else:
             self.debuff = None
         self.active_debuffs = []
@@ -36,6 +38,8 @@ class Tank(MovingEntity):
         self.health -= damage
         if self.health <= 0:
             self.die(game)
+        if self.health >= self.max_health:
+            self.health = self.max_health
 
     def turn_right(self):
         x = -self.direction[1]
@@ -51,11 +55,36 @@ class Tank(MovingEntity):
         if isinstance(entity, Bullet):
             if entity.shooter != self:
                 self.is_dead = True
-                return True
+                return 'bullet', x, y
+        if isinstance(entity, Bonus):
+            entity.action.apply(self)
+            entity.is_dead = True
+            game.active_bonuses.remove(entity)
+            return 'bonus', x, y
+        return False
 
-    def get_debuff_from(self, tank):
-        if tank.debuff:
-            self.active_debuffs.append(tank.debuff)
+    def get_debuff(self, debuff):
+        if debuff:
+            self.active_debuffs.append(debuff)
+
+    def move(self, game, direction: int):
+        new_x = self.x + direction * self.direction[0]
+        new_y = self.y + direction * self.direction[1]
+        for tank in game.enemies + list(game.tanks.values()):
+            if tank.x == new_x and tank.y == new_y:
+                return self.collision(new_x, new_y, tank, game)
+        for bonus in game.active_bonuses:
+            if new_x == bonus.x and new_y == bonus.y:
+                game.active_bonuses.remove(bonus)
+                self.x = new_x
+                self.y = new_y
+                return self.collision(new_x, new_y, bonus, game)
+
+        if not game.field.level[new_y][new_x].passable:
+            return self.collision(new_x, new_y, game.field.level[new_y][new_x],
+                                  game)
+        self.x = new_x
+        self.y = new_y
 
 
 class Bullet(MovingEntity):
@@ -68,7 +97,7 @@ class Bullet(MovingEntity):
             if entity != self.shooter:
                 self.die(game)
                 entity.decrease_health(game, self.shooter.damage)
-                entity.get_debuff_from(self.shooter)
+                entity.get_debuff(self.shooter.debuff)
                 return 'tank', x, y
         if isinstance(entity, DestructibleCell):
             entity.decrease_health(self.shooter.damage, game, x, y)
@@ -80,10 +109,3 @@ class Bullet(MovingEntity):
     def die(self, game):
         self.is_dead = True
         game.bullets.remove(self)
-
-
-class Debuff:
-    def __init__(self, debuff_data: dict):
-        self.duration = debuff_data['duration']
-        self.damage = debuff_data['damage']
-        self.name = debuff_data['name']

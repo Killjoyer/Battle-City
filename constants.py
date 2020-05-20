@@ -22,6 +22,19 @@ class TankOwner:
     Human = 'human'
 
 
+class DebuffType:
+    OnFire = {
+        'name': 'On fire!',
+        'duration': 5,  # seconds
+        'damage': 2
+    }
+    Regeneration = {
+        'name': 'regeneration',
+        'duration': 5,
+        'damage': -8
+    }
+
+
 class TankType(Enum):
     Default = {
         'speed': 2,
@@ -30,16 +43,13 @@ class TankType(Enum):
         'cooldown': 3,  # seconds
         'debuff': None
     }
+
     Flaming = {
         'speed': 2,
         'damage': 5,
         'health': 80,
         'cooldown': 5,
-        'debuff': {
-            'name': 'On fire!',
-            'duration': 5,  # seconds
-            'damage': 2
-        }
+        'debuff': DebuffType.OnFire
     }
 
 
@@ -88,9 +98,41 @@ class Cells:
 
 class WindowSettings:
     Title = 'Battle Town'
+
     IcoSource = os.path.join('Resources', 'icon.ico')
     TimerInterval = 10
 
 
 class Bullets:
     Texture = os.path.join('Resources', 'bullet.png')
+
+
+class BonusesTypes:
+    RollRange = (1, 2)
+    InstantHeal = {
+        'name': 'instant heal',
+        'amount': 60
+    }
+    Regeneration = DebuffType.Regeneration
+    Roll = {
+        1: InstantHeal,
+        2: Regeneration
+    }
+
+
+class Bonuses:
+    RollBorders = (1, 10)
+
+    BingoThreshold = 1
+
+    BuffsColors = {
+        'On fire!': (200, 59, 59),  # Red - orange
+        'regeneration': (59, 170, 59),  # Green
+    }
+
+    Texture = {
+        BonusesTypes.InstantHeal['name']:
+            os.path.join('Resources', 'heal.png'),
+        BonusesTypes.Regeneration['name']:
+            os.path.join('Resources', 'regeneration.png')
+    }

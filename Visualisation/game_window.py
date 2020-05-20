@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMainWindow
 
 from Visualisation.cell_visualisation import CellVisualisation
 from Visualisation.cell_visualisation import DestructibleCellVisualisation
-from Visualisation.tank_visualisation import TankVisualisation, HealthBar
+from Visualisation.tank_visualisation import TankVisualisation
 from cells import EmptyCell
 from constants import MovingWills, Cells, WindowSettings
 from tank import TankOwner
@@ -49,9 +49,11 @@ class GameWindow(QMainWindow):
         self.timer.timeout.connect(self.game_update)
         self.timer.start()
         self.paused = 0
+        self.bullets = set()
 
     def game_update(self):
         try:
+            self.update_bullets()
             for owner, tank in self.tanks.items():
                 tank.update_bars()
                 tank.treat_debuffs()
@@ -60,7 +62,6 @@ class GameWindow(QMainWindow):
                     tank.hide()
                     continue
                 tank.update_position()
-                self.update_bullets(tank)
             for tank in self.enemies:
                 tank.update_bars()
                 tank.treat_debuffs()
@@ -70,18 +71,17 @@ class GameWindow(QMainWindow):
                     tank.hide()
                     continue
                 tank.update_position()
-                self.update_bullets(tank)
         except Exception as e:
-            print(e)
+            pass  # print(e)
 
-    def update_bullets(self, tank):
-        for bullet in tank.bullets:
+    def update_bullets(self):
+        for bullet in self.bullets:
             col = bullet.update_position()
             if bullet.wrapping_object.is_dead:
                 if col and col[0] == 'destr_cell':
                     self.field[col[2]][col[1]].update_texture()
-                tank.bullets.remove(bullet)
                 bullet.hide()
+                self.bullets.remove(bullet)
 
     def keyPressEvent(self, e: QKeyEvent):
         key = e.key()

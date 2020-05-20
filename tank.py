@@ -19,11 +19,10 @@ class Tank(MovingEntity):
         else:
             self.debuff = None
         self.active_debuffs = []
-        self.bullets = set()
 
     def shoot(self):
         bullet = Bullet(self, self.x, self.y, self.direction)
-        self.bullets.add(bullet)
+        self.game.bullets.add(bullet)
         return bullet
 
     def die(self, game):
@@ -71,17 +70,16 @@ class Bullet(MovingEntity):
                 entity.decrease_health(game, self.shooter.damage)
                 entity.get_debuff_from(self.shooter)
                 return 'tank', x, y
-        elif isinstance(entity, DestructibleCell):
+        if isinstance(entity, DestructibleCell):
             entity.decrease_health(self.shooter.damage, game, x, y)
             self.die(game)
             return 'destr_cell', x, y
-        else:
-            self.die(game)
-            return 'indestr_cell', x, y
+        self.die(game)
+        return 'indestr_cell', x, y
 
     def die(self, game):
         self.is_dead = True
-        self.shooter.bullets.remove(self)
+        game.bullets.remove(self)
 
 
 class Debuff:

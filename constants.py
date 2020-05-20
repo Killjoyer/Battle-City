@@ -25,7 +25,7 @@ class TankOwner:
 class TankType(Enum):
     Default = {
         'speed': 2,
-        'damage': 10,
+        'damage': 20,
         'health': 100,
         'cooldown': 3,  # seconds
         'debuff': None
@@ -38,7 +38,7 @@ class TankType(Enum):
         'debuff': {
             'name': 'On fire!',
             'duration': 5,  # seconds
-            'damage': 5
+            'damage': 2
         }
     }
 

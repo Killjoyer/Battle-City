@@ -11,7 +11,6 @@ class TankVisualisation(MovingEntityVisualisation):
     def __init__(self, father, tank: Tank):
         super().__init__(father, tank,
                          TankTextures.Textures[tank.type](tank.owner))
-        self.bullets = set()
         self.can_shoot = True
         self.shooting_cd = QTimer()
         self.shooting_cd.setInterval(self.wrapping_object.cooldown * 1000)
@@ -33,7 +32,7 @@ class TankVisualisation(MovingEntityVisualisation):
             bullet = BulletVisualisation(self.father,
                                          self.wrapping_object.shoot())
             bullet.stackUnder(self)
-            self.bullets.add(bullet)
+            self.parent().bullets.add(bullet)
             self.can_shoot = False
             self.shooting_cd.start()
 
@@ -42,30 +41,6 @@ class TankVisualisation(MovingEntityVisualisation):
             self.active_debuffs.append(DebuffVisualisation(self, debuff))
 
         self.wrapping_object.active_debuffs = []
-
-
-class DebuffVisualisation(QWidget):
-    def __init__(self, tank, debuff: Debuff):
-        super().__init__(tank)
-        self.tank = tank
-        self.debuff = debuff
-        self.duration = QTimer()
-        self.duration.setInterval(debuff.duration * 1000)
-        self.duration.timeout.connect(self.stop)
-        self.duration.start()
-        self.ticks = QTimer()
-        self.ticks.setInterval(500)
-        self.ticks.timeout.connect(self.do_tick)
-        self.ticks.start()
-
-    def do_tick(self):
-        self.tank.wrapping_object.decrease_health(self.tank.parent(),
-                                                  self.debuff.damage)
-
-    def stop(self):
-        self.tank.active_debuffs.remove(self)
-        self.ticks.stop()
-        self.duration.stop()
 
 
 class Bar(QWidget):
@@ -107,5 +82,44 @@ class CoolDownBar(Bar):
         super().__init__(tank, (180, 180, 180),
                          lambda: (self.max_cd -
                                   tank.shooting_cd.remainingTime()) /
-                                 self.max_cd, 0, Cells.CellSize // 10,
+                         self.max_cd, 0, Cells.CellSize // 10,
                          Cells.CellSize // 25)
+
+
+class DebuffBar(Bar):
+    def __init__(self, tank, debuff):
+        self.max_cd = debuff.duration.interval()
+        if debuff.debuff.name == 'On fire!':
+            color = (200, 59, 59)
+        super().__init__(tank, color,
+                         lambda: debuff.duration.remainingTime() / self.max_cd,
+                         0, Cells.CellSize - Cells.CellSize//25,
+                         Cells.CellSize//25)
+
+
+class DebuffVisualisation(QWidget):
+    def __init__(self, tank, debuff: Debuff):
+        super().__init__(tank)
+        self.tank = tank
+        self.debuff = debuff
+        self.duration = QTimer()
+        self.duration.setInterval(debuff.duration * 1000)
+        self.duration.timeout.connect(self.stop)
+        self.duration.start()
+        self.ticks = QTimer()
+        self.ticks.setInterval(500)
+        self.ticks.timeout.connect(self.do_tick)
+        self.ticks.start()
+        self.bar = DebuffBar(tank, self)
+        self.tank.bars.append(self.bar)
+
+    def do_tick(self):
+        self.tank.wrapping_object.decrease_health(self.tank.parent(),
+                                                  self.debuff.damage)
+
+    def stop(self):
+        self.tank.active_debuffs.remove(self)
+        self.ticks.stop()
+        self.bar.hide()
+        self.tank.bars.remove(self.bar)
+        self.duration.stop()

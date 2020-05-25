@@ -33,7 +33,6 @@ class Tank(MovingEntity):
         self.is_dead = True
         if self.owner == TankOwner.Human:
             self.game.tanks.pop(TankOwner.Human)
-            print('pokekalsa')
         else:
             self.game.enemies.remove(self)
 
@@ -62,7 +61,6 @@ class Tank(MovingEntity):
                 return 'bullet', x, y
         if isinstance(entity, Bonus):
             entity.action.apply(self)
-            print(entity in game.active_bonuses)
             game.active_bonuses.remove(entity)
             entity.is_dead = True
             return 'bonus', x, y

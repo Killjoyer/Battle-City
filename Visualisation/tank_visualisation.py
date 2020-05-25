@@ -133,6 +133,7 @@ class DebuffVisualisation(QWidget):
         self.duration.setInterval(debuff.duration * 1000)
         self.duration.timeout.connect(self.stop)
         self.label = QLabel(self)
+        self.label.show()
         self.label.resize(Cells.CellSize, Cells.CellSize)
         self.texture_queue = Queue()
         self.set_queue()
@@ -152,9 +153,7 @@ class DebuffVisualisation(QWidget):
 
     def update_texture(self):
         texture = self.texture_queue.get_nowait()
-        print(texture)
         self.label.setPixmap(texture)
-        self.label.show()
         self.texture_queue.put_nowait(texture)
 
     def do_tick(self):

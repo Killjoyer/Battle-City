@@ -3,6 +3,7 @@ import unittest
 from constants import Direction
 from game import Game
 from tank import Tank, TankType, TankOwner
+from cells import EmptyCell
 
 
 class TankTests(unittest.TestCase):
@@ -23,8 +24,18 @@ class TankTests(unittest.TestCase):
         self.assertEqual(tank.y, 1)
 
     def test_stop_at_wall(self):
-        game = Game('Px')
+        game = Game(('Px', ))
         tank = game.tanks[TankOwner.Human]
         tank.move(game, 1)
-        self.assertEqual(self.x, 1)
-        self.assertEqual(self.y, 1)
+        self.assertEqual(tank.x, 1)
+        self.assertEqual(tank.y, 1)
+
+    def test_destroys_crate(self):
+        game = Game(('Px', ))
+        tank = game.tanks[TankOwner.Human]
+        for i in range(6):
+            b = tank.shoot()
+            b.move(game, 1)
+        self.assertTrue(isinstance(
+            game.field.level[1][2], EmptyCell
+        ))

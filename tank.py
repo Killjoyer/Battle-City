@@ -76,8 +76,6 @@ class Tank(MovingEntity):
         for bonus in game.active_bonuses:
             if new_x == bonus.x and new_y == bonus.y:
                 game.active_bonuses.remove(bonus)
-                self.x = new_x
-                self.y = new_y
                 return self.collision(new_x, new_y, bonus, game)
 
         if not game.field.level[new_y][new_x].passable:

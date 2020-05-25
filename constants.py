@@ -28,6 +28,7 @@ class DebuffType:
         'duration': 5,  # seconds
         'damage': 2
     }
+
     Regeneration = {
         'name': 'regeneration',
         'duration': 5,
@@ -38,7 +39,7 @@ class DebuffType:
 class TankType(Enum):
     Default = {
         'speed': 2,
-        'damage': 20,
+        'damage': 15,
         'health': 100,
         'cooldown': 3,  # seconds
         'debuff': None
@@ -52,6 +53,14 @@ class TankType(Enum):
         'debuff': DebuffType.OnFire
     }
 
+    Quick = {
+        'speed': 4,
+        'damage': 10,
+        'health': 70,
+        'cooldown': 3,
+        'debuff': None
+    }
+
 
 class TankTextures:
     Textures = {
@@ -59,6 +68,8 @@ class TankTextures:
         os.path.join('Resources', f'default_tank_{tank_owner}.png'),
         TankType.Flaming: lambda tank_owner:
         os.path.join('Resources', f'flaming_tank_{tank_owner}.png'),
+        TankType.Quick: lambda tank_owner:
+        os.path.join('Resources', f'fast_tank_{tank_owner}.png'),
     }
 
 
@@ -66,12 +77,14 @@ class Cells:
     GeneratingTypes = {
         'E': TankType.Default,
         'F': TankType.Flaming,
+        'Q': TankType.Quick,
     }
 
     Cells = {
         'P': lambda: EmptyCell(),  # player position
         'E': lambda: EmptyCell(),
         'F': lambda: EmptyCell(),
+        'Q': lambda: EmptyCell(),
         '_': lambda: EmptyCell(),
         '#': lambda: BrickWall(),
         'x': lambda: WoodenCrate(),
@@ -108,20 +121,26 @@ class Bullets:
 
 
 class BonusesTypes:
-    RollRange = (1, 2)
+    RollRange = (4, 4)
     InstantHeal = {
         'name': 'instant heal',
         'amount': 60
     }
     Regeneration = DebuffType.Regeneration
+    CooldownDecrease = {
+        'name': 'cooldown decrease',
+        'amount': 0.5
+    }
     Roll = {
         1: InstantHeal,
-        2: Regeneration
+        2: Regeneration,
+        3: Regeneration,
+        4: CooldownDecrease,
     }
 
 
 class Bonuses:
-    RollBorders = (1, 10)
+    RollBorders = (1, 20)
 
     BingoThreshold = 1
 
@@ -134,5 +153,7 @@ class Bonuses:
         BonusesTypes.InstantHeal['name']:
             os.path.join('Resources', 'heal.png'),
         BonusesTypes.Regeneration['name']:
-            os.path.join('Resources', 'regeneration.png')
+            os.path.join('Resources', 'regeneration.png'),
+        BonusesTypes.CooldownDecrease['name']:
+            os.path.join('Resources', 'cooldown_decrease.png')
     }

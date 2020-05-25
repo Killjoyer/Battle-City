@@ -13,7 +13,9 @@ class TankVisualisation(MovingEntityVisualisation):
         super().__init__(father, tank,
                          TankTextures.Textures[tank.type](tank.owner))
         self.can_shoot = True
+        self.is_shooting = False
         self.shooting_cd = QTimer()
+        self.cooldown = self.wrapping_object.cooldown
         self.shooting_cd.setInterval(self.wrapping_object.cooldown * 1000)
         self.shooting_cd.timeout.connect(self._drop_cd)
         self.show()
@@ -26,6 +28,7 @@ class TankVisualisation(MovingEntityVisualisation):
 
     def _drop_cd(self):
         self.can_shoot = True
+        print('can shoot!')
         self.shooting_cd.stop()
 
     def shoot(self):
@@ -35,6 +38,10 @@ class TankVisualisation(MovingEntityVisualisation):
             bullet.stackUnder(self)
             self.parent().bullets.add(bullet)
             self.can_shoot = False
+            print(self.wrapping_object.cooldown, self.cooldown)
+            if self.wrapping_object.cooldown != self.cooldown:
+                self.cooldown = self.wrapping_object.cooldown * 1000
+                self.shooting_cd.setInterval(self.cooldown)
             self.shooting_cd.start()
 
     def treat_debuffs(self):
@@ -81,9 +88,9 @@ class CoolDownBar(Bar):
     def __init__(self, tank: TankVisualisation):
         self.max_cd = tank.shooting_cd.interval()
         super().__init__(tank, (180, 180, 180),
-                         lambda: (self.max_cd -
+                         lambda: (tank.shooting_cd.interval() -
                                   tank.shooting_cd.remainingTime()) /
-                         self.max_cd, 0, Cells.CellSize // 10,
+                         tank.shooting_cd.interval(), 0, Cells.CellSize // 10,
                          Cells.CellSize // 25)
 
 

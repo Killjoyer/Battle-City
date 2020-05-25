@@ -55,6 +55,8 @@ class GameWindow(QMainWindow):
 
     def game_update(self):
         try:
+            if len(self.game.enemies) == 0: self.win_game()
+            if len(self.game.tanks) == 0: self.loose_game()
             self.update_bullets()
             self.update_bonuses()
             self.game.decide_to_spawn_bonus()
@@ -75,6 +77,8 @@ class GameWindow(QMainWindow):
             print(e)
 
     def update_tank(self, tank):
+        if tank.is_shooting:
+            tank.shoot()
         tank.update_bars()
         tank.treat_debuffs()
         tank.update_position()
@@ -125,9 +129,18 @@ class GameWindow(QMainWindow):
             self.tanks[TankOwner.Human].moving_will = MovingWills.Backward
             self.tanks[TankOwner.Human].moves = True
         elif key == Qt.Key_Space:
-            self.tanks[TankOwner.Human].shoot()
+            self.tanks[TankOwner.Human].is_shooting = True
 
     def keyReleaseEvent(self, e: QKeyEvent):
         key = e.key()
         if key == Qt.Key_W or key == Qt.Key_S:
             self.tanks[TankOwner.Human].moves = False
+        elif key == Qt.Key_Space:
+            self.tanks[TankOwner.Human].is_shooting = False
+
+    def win_game(self):
+        print('u won')
+
+    def loose_game(self):
+        self.hide()
+        

@@ -23,10 +23,21 @@ class RegenerationAction:
         target.get_debuff(self.buff)
 
 
+class PermanentCooldownDecrease:
+    def __init__(self):
+        self.amount = BonusesTypes.CooldownDecrease['amount']
+
+    def apply(self, target):
+        if target.cooldown > self.amount:
+            target.cooldown -= self.amount
+
+
 class Bonus:
     Actions = {
         BonusesTypes.InstantHeal['name']: lambda: InstantHealAction(),
-        BonusesTypes.Regeneration['name']: lambda: RegenerationAction()
+        BonusesTypes.Regeneration['name']: lambda: RegenerationAction(),
+        BonusesTypes.CooldownDecrease['name']: lambda:
+        PermanentCooldownDecrease(),
     }
 
     def __init__(self, game, x, y, name):

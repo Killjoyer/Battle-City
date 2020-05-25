@@ -9,9 +9,11 @@ class Tank(MovingEntity):
                  direction: Direction, owner: TankOwner, game):
         super().__init__(x, y, direction)
         self.type = tank_type
+        self.points = 0
         self.game = game
         self.owner = owner
         self.speed = tank_type.value['speed']
+        self.cost = tank_type.value['cost']
         self.damage = tank_type.value['damage']
         self.health = tank_type.value['health']
         self.max_health = self.health
@@ -31,10 +33,12 @@ class Tank(MovingEntity):
         self.is_dead = True
         if self.owner == TankOwner.Human:
             self.game.tanks.pop(TankOwner.Human)
+            print('pokekalsa')
         else:
             self.game.enemies.remove(self)
 
     def decrease_health(self, game, damage: int):
+        if self.is_dead: return
         self.health -= damage
         if self.health <= 0:
             self.die(game)
@@ -58,8 +62,9 @@ class Tank(MovingEntity):
                 return 'bullet', x, y
         if isinstance(entity, Bonus):
             entity.action.apply(self)
-            entity.is_dead = True
+            print(entity in game.active_bonuses)
             game.active_bonuses.remove(entity)
+            entity.is_dead = True
             return 'bonus', x, y
         return False
 
@@ -75,7 +80,8 @@ class Tank(MovingEntity):
                 return self.collision(new_x, new_y, tank, game)
         for bonus in game.active_bonuses:
             if new_x == bonus.x and new_y == bonus.y:
-                game.active_bonuses.remove(bonus)
+                self.x = new_x
+                self.y = new_y
                 return self.collision(new_x, new_y, bonus, game)
 
         if not game.field.level[new_y][new_x].passable:

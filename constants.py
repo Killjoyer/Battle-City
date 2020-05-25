@@ -40,7 +40,8 @@ class TankType(Enum):
     Default = {
         'speed': 2,
         'damage': 15,
-        'health': 100,
+        'health': 10000,
+        'cost': 10,
         'cooldown': 3,  # seconds
         'debuff': None
     }
@@ -49,7 +50,8 @@ class TankType(Enum):
         'speed': 2,
         'damage': 5,
         'health': 80,
-        'cooldown': 5,
+        'cost': 15,
+        'cooldown': 1,
         'debuff': DebuffType.OnFire
     }
 
@@ -57,6 +59,7 @@ class TankType(Enum):
         'speed': 4,
         'damage': 10,
         'health': 70,
+        'cost': 13,
         'cooldown': 3,
         'debuff': None
     }
@@ -121,7 +124,7 @@ class Bullets:
 
 
 class BonusesTypes:
-    RollRange = (4, 4)
+    RollRange = (1, 4)
     InstantHeal = {
         'name': 'instant heal',
         'amount': 60
@@ -147,6 +150,19 @@ class Bonuses:
     BuffsColors = {
         'On fire!': (200, 59, 59),  # Red - orange
         'regeneration': (59, 170, 59),  # Green
+    }
+
+    BuffsTextures = {
+        'On fire!': [
+            os.path.join('Resources', 'flames1.png'),
+            os.path.join('Resources', 'flames2.png'),
+            os.path.join('Resources', 'flames3.png')
+        ],
+        'regeneration': [
+            os.path.join('Resources', 'regen1.png'),
+            os.path.join('Resources', 'regen2.png'),
+            os.path.join('Resources', 'regen3.png'),
+        ]
     }
 
     Texture = {

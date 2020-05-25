@@ -1,11 +1,13 @@
 from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel
+from queue import Queue
 
 from Visualisation.bullet_visualisation import BulletVisualisation
 from Visualisation.moving_entity_visualisation import MovingEntityVisualisation
+from bonus import Buff
 from constants import TankTextures, Cells, Bonuses
 from tank import Tank
-from bonus import Buff
 
 
 class TankVisualisation(MovingEntityVisualisation):
@@ -47,8 +49,23 @@ class TankVisualisation(MovingEntityVisualisation):
     def treat_debuffs(self):
         for debuff in self.wrapping_object.active_debuffs:
             self.active_debuffs.append(DebuffVisualisation(self, debuff))
-
         self.wrapping_object.active_debuffs = []
+
+    def stop_tank(self):
+        if not self.shooting_cd.isActive():
+            return
+        self.shooting_cd.stop()
+        for buff in self.active_debuffs:
+            buff.duration.stop()
+            buff.ticks.stop()
+
+    def start_tank(self):
+        if self.shooting_cd.isActive():
+            return
+        self.shooting_cd.start()
+        for buff in self.active_debuffs:
+            buff.duration.start()
+            buff.ticks.start()
 
 
 class Bar(QWidget):
@@ -90,7 +107,8 @@ class CoolDownBar(Bar):
         super().__init__(tank, (180, 180, 180),
                          lambda: (tank.shooting_cd.interval() -
                                   tank.shooting_cd.remainingTime()) /
-                         tank.shooting_cd.interval(), 0, Cells.CellSize // 10,
+                                 tank.shooting_cd.interval(), 0,
+                         Cells.CellSize // 10,
                          Cells.CellSize // 25)
 
 
@@ -101,9 +119,9 @@ class DebuffBar(Bar):
         super().__init__(tank, color,
                          lambda: debuff.duration.remainingTime() / self.max_cd,
                          0,
-                         Cells.CellSize - Cells.CellSize//25 -
-                         len(tank.active_debuffs) * Cells.CellSize//25,
-                         Cells.CellSize//25)
+                         Cells.CellSize - Cells.CellSize // 25 -
+                         len(tank.active_debuffs) * Cells.CellSize // 25,
+                         Cells.CellSize // 25)
 
 
 class DebuffVisualisation(QWidget):
@@ -114,6 +132,10 @@ class DebuffVisualisation(QWidget):
         self.duration = QTimer()
         self.duration.setInterval(debuff.duration * 1000)
         self.duration.timeout.connect(self.stop)
+        self.label = QLabel(self)
+        self.label.resize(Cells.CellSize, Cells.CellSize)
+        self.texture_queue = Queue()
+        self.set_queue()
         self.duration.start()
         self.ticks = QTimer()
         self.ticks.setInterval(500)
@@ -121,14 +143,29 @@ class DebuffVisualisation(QWidget):
         self.ticks.start()
         self.bar = DebuffBar(tank, self)
         self.tank.bars.append(self.bar)
+        self.show()
+
+    def set_queue(self):
+        for texture in Bonuses.BuffsTextures[self.debuff.name]:
+            self.texture_queue.put_nowait(
+                QPixmap(texture).scaled(Cells.CellSize, Cells.CellSize))
+
+    def update_texture(self):
+        texture = self.texture_queue.get_nowait()
+        print(texture)
+        self.label.setPixmap(texture)
+        self.label.show()
+        self.texture_queue.put_nowait(texture)
 
     def do_tick(self):
+        self.update_texture()
         self.tank.wrapping_object.decrease_health(self.tank.parent(),
                                                   self.debuff.damage)
 
     def stop(self):
         self.tank.active_debuffs.remove(self)
         self.ticks.stop()
-        self.bar.hide()
+        self.bar.close()
         self.tank.bars.remove(self.bar)
         self.duration.stop()
+        self.close()

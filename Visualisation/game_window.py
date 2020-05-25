@@ -1,10 +1,11 @@
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QIcon
-from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtWidgets import QMainWindow, QInputDialog, QLineEdit, QDialog
 
 from Visualisation.bonus_visualisation import BonusVisualisation
 from Visualisation.cell_visualisation import CellVisualisation
 from Visualisation.cell_visualisation import DestructibleCellVisualisation
+from Visualisation.point_counter import PointCounter
 from Visualisation.tank_visualisation import TankVisualisation
 from cells import EmptyCell
 from constants import MovingWills, Cells, WindowSettings
@@ -21,6 +22,7 @@ class GameWindow(QMainWindow):
         self.field = [[0] * (self.game.field.width + 2)]
         self.overlaying = []
         self.underlaying = []
+        self.player_name = self.get_name()
 
         for i in range(0, self.game.field.height):
             self.field.append([0] * self.game.field.width)
@@ -49,9 +51,18 @@ class GameWindow(QMainWindow):
         self.timer.setInterval(WindowSettings.TimerInterval)
         self.timer.timeout.connect(self.game_update)
         self.timer.start()
+        self.state = 'the game is on'
         self.paused = 0
         self.bullets = set()
         self.drawn_bonuses = {}
+        self.point_counter = PointCounter(self)
+
+    def get_name(self):
+        text, okPressed = QInputDialog.getText(self, "Get text",
+                                               "What's ur name, dude",
+                                               QLineEdit.Normal, "")
+        if okPressed and text != '':
+            return text
 
     def game_update(self):
         try:
@@ -63,17 +74,21 @@ class GameWindow(QMainWindow):
             for owner, tank in self.tanks.items():
                 self.update_tank(tank)
                 if tank.wrapping_object.is_dead:
-                    self.tanks.pop(tank)
+                    self.tanks.pop(owner)
                     tank.hide()
                     continue
             for tank in self.enemies:
                 self.update_tank(tank)
                 tank.shoot()
                 if tank.wrapping_object.is_dead:
+                    self.tanks[TankOwner.Human].wrapping_object.points += \
+                        tank.wrapping_object.cost
+                    self.point_counter.set_points(
+                        self.tanks[TankOwner.Human].wrapping_object.points)
                     self.enemies.remove(tank)
                     tank.hide()
                     continue
-        except Exception as e:
+        except RuntimeError as e:
             print(e)
 
     def update_tank(self, tank):
@@ -102,14 +117,15 @@ class GameWindow(QMainWindow):
                 self.bullets.remove(bullet)
 
     def keyPressEvent(self, e: QKeyEvent):
+        if len(self.tanks) == 0: return
         key = e.key()
         if key == Qt.Key_Escape:
             self.paused = (self.paused + 1) % 2
         if self.paused:
-            self.timer.stop()
+            self.stop_game()
             return
         else:
-            self.timer.start()
+            self.start_game()
         if key == Qt.Key_W:
             if self.tanks[TankOwner.Human].moving_will == MovingWills.Backward:
                 self.tanks[TankOwner.Human].ticks = 0
@@ -139,8 +155,28 @@ class GameWindow(QMainWindow):
             self.tanks[TankOwner.Human].is_shooting = False
 
     def win_game(self):
-        print('u won')
+        self.stop_game()
+        self.state = 'game won'
+        self.close()
 
     def loose_game(self):
-        self.hide()
-        
+        self.stop_game()
+        self.state = 'game over'
+
+        self.close()
+
+    def stop_game(self):
+        self.timer.stop()
+        for k, v in self.tanks.items():
+            v.stop_tank()
+        for t in self.enemies:
+            t.stop_tank()
+
+    def start_game(self):
+        if self.timer.isActive():
+            return
+        self.timer.start()
+        for k, v in self.tanks.items():
+            v.start_tank()
+        for t in self.enemies:
+            t.start_tank()

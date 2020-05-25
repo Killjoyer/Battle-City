@@ -30,8 +30,8 @@ class Game:
         return None
 
     def spawn_bonus(self):
-        x = randint(1, self.field.width)
-        y = randint(1, self.field.height)
+        x = randint(1, self.field.width-1)
+        y = randint(1, self.field.height-1)
         if isinstance(self.field.level[y][x], EmptyCell):
             bonus = BonusesTypes.Roll[randint(*BonusesTypes.RollRange)]
             bonus = Bonus(self, x, y, bonus['name'])

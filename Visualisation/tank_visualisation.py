@@ -1,7 +1,8 @@
+from queue import Queue
+
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QLabel
-from queue import Queue
 
 from Visualisation.bullet_visualisation import BulletVisualisation
 from Visualisation.moving_entity_visualisation import MovingEntityVisualisation
@@ -30,7 +31,7 @@ class TankVisualisation(MovingEntityVisualisation):
 
     def _drop_cd(self):
         self.can_shoot = True
-        print('can shoot!')
+        # print('can shoot!')
         self.shooting_cd.stop()
 
     def shoot(self):
@@ -40,7 +41,7 @@ class TankVisualisation(MovingEntityVisualisation):
             bullet.stackUnder(self)
             self.parent().bullets.add(bullet)
             self.can_shoot = False
-            print(self.wrapping_object.cooldown, self.cooldown)
+            # print(self.wrapping_object.cooldown, self.cooldown)
             if self.wrapping_object.cooldown != self.cooldown:
                 self.cooldown = self.wrapping_object.cooldown * 1000
                 self.shooting_cd.setInterval(self.cooldown)
@@ -90,12 +91,13 @@ class Bar(QWidget):
         self.param_rect.show()
 
     def update_param(self):
-        self.param_rect.resize(self.param() * Cells.CellSize, self.height)
+        p = self.param()
+        self.param_rect.resize(p * Cells.CellSize, self.height)
 
 
 class HealthBar(Bar):
     def __init__(self, tank):
-        self.max_health = tank.wrapping_object.health
+        self.max_health = tank.wrapping_object.max_health
         super().__init__(tank, (59, 170, 59),
                          lambda: tank.wrapping_object.health / self.max_health,
                          0, 0, Cells.CellSize // 10)

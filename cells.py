@@ -34,7 +34,24 @@ class WoodenCrate(DestructibleCell):
         super().__init__()
 
 
+class IceBlock(DestructibleCell):
+    def __init__(self):
+        super().__init__()
+
+
 class PoisonousMist(ImmortalCell):
     def __init__(self):
         super().__init__(True)
+        self.overlays = True
+
+
+class AntitankHedgehog(ImmortalCell):
+    def __init__(self):
+        super().__init__(False)
+        self.overlays = True
+
+
+class ConcreteFence(ImmortalCell):
+    def __init__(self):
+        super().__init__(False)
         self.overlays = True

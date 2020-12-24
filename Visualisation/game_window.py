@@ -1,6 +1,9 @@
+import os
+import pickle
+
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QIcon
-from PyQt5.QtWidgets import QMainWindow, QInputDialog, QLineEdit, QDialog
+from PyQt5.QtWidgets import QMainWindow, QInputDialog, QLineEdit, QMessageBox
 
 from Visualisation.bonus_visualisation import BonusVisualisation
 from Visualisation.cell_visualisation import CellVisualisation
@@ -13,16 +16,46 @@ from tank import TankOwner
 
 
 class GameWindow(QMainWindow):
+    load = False
+    name_to_load = ''
     def __init__(self, game):
         super().__init__()
         self.setWindowIcon(QIcon(WindowSettings.IcoSource))
         self.setWindowTitle(WindowSettings.Title)
         self.cell_size = Cells.CellSize
+        self.player_name = self.get_name()
+        if os.path.isfile(f"{self.player_name}.txt"):
+            buttonReply = \
+                QMessageBox.question(self, 'Load proposal',
+                                     "Do u wish to load ur previous game?",
+                                     QMessageBox.Yes | QMessageBox.No,
+                                     QMessageBox.No)
+            if buttonReply == QMessageBox.Yes:
+                print('Yes clicked.')
+                with open(f"{self.player_name}.txt", 'rb') as f:
+                    game = pickle.load(f)
+            else:
+                print('No clicked.')
         self.game = game
         self.field = [[0] * (self.game.field.width + 2)]
+        self.keys = {
+            TankOwner.Human: {
+                'fwd': Qt.Key_W,
+                'bck': Qt.Key_S,
+                'lft': Qt.Key_A,
+                'rht': Qt.Key_D,
+                'sht': Qt.Key_Space,
+            },
+            TankOwner.SecondPlayer: {
+                'fwd': Qt.Key_Up,
+                'bck': Qt.Key_Down,
+                'lft': Qt.Key_Left,
+                'rht': Qt.Key_Right,
+                'sht': Qt.Key_Alt,
+            }
+        }
         self.overlaying = []
         self.underlaying = []
-        self.player_name = self.get_name()
 
         for i in range(0, self.game.field.height):
             self.field.append([0] * self.game.field.width)
@@ -126,33 +159,43 @@ class GameWindow(QMainWindow):
             return
         else:
             self.start_game()
-        if key == Qt.Key_W:
-            if self.tanks[TankOwner.Human].moving_will == MovingWills.Backward:
-                self.tanks[TankOwner.Human].ticks = 0
-            self.tanks[TankOwner.Human].moves = True
-            self.tanks[TankOwner.Human].moving_will = MovingWills.Forward
-        elif key == Qt.Key_D:
-            if self.tanks[TankOwner.Human].moving_will != MovingWills.Nowhere:
+        self.treat_key(key, TankOwner.Human)
+        self.treat_key(key, TankOwner.SecondPlayer)
+
+    def treat_key(self, key, tank_owner: TankOwner):
+        if key == self.keys[tank_owner]['fwd']:
+            if self.tanks[tank_owner].moving_will == MovingWills.Backward:
+                self.tanks[tank_owner].ticks = 0
+            self.tanks[tank_owner].moves = True
+            self.tanks[tank_owner].moving_will = MovingWills.Forward
+        elif key == self.keys[tank_owner]['rht']:
+            if self.tanks[tank_owner].moving_will != MovingWills.Nowhere:
                 return
-            self.game.tanks[TankOwner.Human].turn_right()
-        elif key == Qt.Key_A:
-            if self.tanks[TankOwner.Human].moving_will != MovingWills.Nowhere:
+            self.game.tanks[tank_owner].turn_right()
+        elif key == self.keys[tank_owner]['lft']:
+            if self.tanks[tank_owner].moving_will != MovingWills.Nowhere:
                 return
-            self.game.tanks[TankOwner.Human].turn_left()
-        elif key == Qt.Key_S:
-            if self.tanks[TankOwner.Human].moving_will == MovingWills.Forward:
-                self.tanks[TankOwner.Human].ticks = 0
-            self.tanks[TankOwner.Human].moving_will = MovingWills.Backward
-            self.tanks[TankOwner.Human].moves = True
-        elif key == Qt.Key_Space:
-            self.tanks[TankOwner.Human].is_shooting = True
+            self.game.tanks[tank_owner].turn_left()
+        elif key == self.keys[tank_owner]['bck']:
+            if self.tanks[tank_owner].moving_will == MovingWills.Forward:
+                self.tanks[tank_owner].ticks = 0
+            self.tanks[tank_owner].moving_will = MovingWills.Backward
+            self.tanks[tank_owner].moves = True
+        elif key == self.keys[tank_owner]['sht']:
+            self.tanks[tank_owner].is_shooting = True
 
     def keyReleaseEvent(self, e: QKeyEvent):
         key = e.key()
-        if key == Qt.Key_W or key == Qt.Key_S:
+        if key == self.keys[TankOwner.Human]['fwd'] or key == \
+                self.keys[TankOwner.SecondPlayer]['fwd'] or key == \
+                self.keys[TankOwner.Human]['bck'] or key == \
+                self.keys[TankOwner.SecondPlayer]['bck']:
             self.tanks[TankOwner.Human].moves = False
-        elif key == Qt.Key_Space:
+            self.tanks[TankOwner.SecondPlayer].moves = False
+        elif key == self.keys[TankOwner.Human]['sht'] or key == \
+                self.keys[TankOwner.SecondPlayer]['sht']:
             self.tanks[TankOwner.Human].is_shooting = False
+            self.tanks[TankOwner.SecondPlayer].is_shooting = False
 
     def win_game(self):
         self.stop_game()
@@ -180,3 +223,7 @@ class GameWindow(QMainWindow):
             v.start_tank()
         for t in self.enemies:
             t.start_tank()
+
+    def closeEvent(self, event):
+        with open(f"{self.player_name}.txt", "wb") as f:
+            pickle.dump(self.game, f)

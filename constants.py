@@ -1,7 +1,8 @@
 import os
 from enum import Enum
 
-from cells import PoisonousMist, BrickWall, EmptyCell, WoodenCrate
+from cells import PoisonousMist, BrickWall, EmptyCell, WoodenCrate, \
+    IceBlock, ConcreteFence, AntitankHedgehog
 
 
 class Direction:
@@ -20,6 +21,7 @@ class MovingWills:
 class TankOwner:
     Computer = 'computer'
     Human = 'human'
+    SecondPlayer = 'second_human'
 
 
 class DebuffType:
@@ -40,7 +42,7 @@ class TankType(Enum):
     Default = {
         'speed': 2,
         'damage': 15,
-        'health': 10000,
+        'health': 100,
         'cost': 10,
         'cooldown': 3,  # seconds
         'debuff': None
@@ -85,6 +87,7 @@ class Cells:
 
     Cells = {
         'P': lambda: EmptyCell(),  # player position
+        'S': lambda: EmptyCell(),  # second player position
         'E': lambda: EmptyCell(),
         'F': lambda: EmptyCell(),
         'Q': lambda: EmptyCell(),
@@ -92,6 +95,9 @@ class Cells:
         '#': lambda: BrickWall(),
         'x': lambda: WoodenCrate(),
         'm': lambda: PoisonousMist(),
+        'i': lambda: IceBlock(),
+        'w': lambda: ConcreteFence(),
+        'h': lambda: AntitankHedgehog(),
     }
 
     CellSize = 64
@@ -101,6 +107,11 @@ class Cells:
         type(EmptyCell()): os.path.join('Resources', 'empty_cell.png'),
         type(WoodenCrate()): os.path.join('Resources', 'wooden_crate.png'),
         type(PoisonousMist()): os.path.join('Resources', 'poisonous_mist.png'),
+        type(IceBlock()): os.path.join('Resources', 'ice_block.png'),
+        type(ConcreteFence()): os.path.join('Resources',
+                                            'concrete_fence.png'),
+        type(AntitankHedgehog()): os.path.join('Resources',
+                                               'antitank_hedgehog.png'),
     }
 
     Destruction = {
@@ -108,6 +119,11 @@ class Cells:
             os.path.join('Resources', 'wooden_crate_1.png'),
             os.path.join('Resources', 'wooden_crate_2.png'),
             os.path.join('Resources', 'wooden_crate_3.png'),
+        ],
+        type(IceBlock()): [
+            os.path.join('Resources', 'ice_block.png'),
+            os.path.join('Resources', 'ice_block.png'),
+            os.path.join('Resources', 'ice_block.png'),
         ]
     }
 

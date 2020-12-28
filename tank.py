@@ -31,8 +31,8 @@ class Tank(MovingEntity):
 
     def die(self, game):
         self.is_dead = True
-        if self.owner == TankOwner.Human:
-            self.game.tanks.pop(TankOwner.Human)
+        if self.owner != TankOwner.Computer:
+            self.game.tanks.pop(self.owner)
         else:
             self.game.enemies.remove(self)
 

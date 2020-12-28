@@ -1,5 +1,6 @@
 import os
 import pickle
+from functools import partial
 
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QKeyEvent, QIcon
@@ -18,6 +19,7 @@ from tank import TankOwner
 class GameWindow(QMainWindow):
     load = False
     name_to_load = ''
+
     def __init__(self, game):
         super().__init__()
         self.setWindowIcon(QIcon(WindowSettings.IcoSource))
@@ -90,6 +92,10 @@ class GameWindow(QMainWindow):
         self.drawn_bonuses = {}
         self.point_counter = PointCounter(self)
 
+    def do_for_every_player(self, func: callable(TankOwner)):
+        for owner, tank in self.tanks.items():
+            func(owner)
+
     def get_name(self):
         text, okPressed = QInputDialog.getText(self, "Get text",
                                                "What's ur name, dude",
@@ -150,7 +156,7 @@ class GameWindow(QMainWindow):
                 self.bullets.remove(bullet)
 
     def keyPressEvent(self, e: QKeyEvent):
-        if len(self.tanks) == 0: return
+        # if len(self.tanks) == 0: return
         key = e.key()
         if key == Qt.Key_Escape:
             self.paused = (self.paused + 1) % 2
@@ -159,8 +165,7 @@ class GameWindow(QMainWindow):
             return
         else:
             self.start_game()
-        self.treat_key(key, TankOwner.Human)
-        self.treat_key(key, TankOwner.SecondPlayer)
+        self.do_for_every_player(partial(self.treat_key, key))
 
     def treat_key(self, key, tank_owner: TankOwner):
         if key == self.keys[tank_owner]['fwd']:
@@ -186,27 +191,31 @@ class GameWindow(QMainWindow):
 
     def keyReleaseEvent(self, e: QKeyEvent):
         key = e.key()
-        if key == self.keys[TankOwner.Human]['fwd'] or key == \
-                self.keys[TankOwner.SecondPlayer]['fwd'] or key == \
-                self.keys[TankOwner.Human]['bck'] or key == \
-                self.keys[TankOwner.SecondPlayer]['bck']:
-            self.tanks[TankOwner.Human].moves = False
-            self.tanks[TankOwner.SecondPlayer].moves = False
-        elif key == self.keys[TankOwner.Human]['sht'] or key == \
-                self.keys[TankOwner.SecondPlayer]['sht']:
-            self.tanks[TankOwner.Human].is_shooting = False
-            self.tanks[TankOwner.SecondPlayer].is_shooting = False
+        self.do_for_every_player(partial(self.treat_key_release, key))
+
+    def treat_key_release(self, key, tank_owner: TankOwner):
+        if key == self.keys[tank_owner]['fwd'] or key == \
+                self.keys[tank_owner]['bck']:
+            self.tanks[tank_owner].moves = False
+        elif key == self.keys[tank_owner]['sht']:
+            self.tanks[tank_owner].is_shooting = False
 
     def win_game(self):
         self.stop_game()
-        self.state = 'game won'
-        self.close()
+        self.state = 'You won. Congratulations.'
+        self.show_end_message()
 
     def loose_game(self):
         self.stop_game()
-        self.state = 'game over'
+        self.state = 'You lose. Get over it.'
+        self.show_end_message()
 
-        self.close()
+    def show_end_message(self):
+        buttonReply = QMessageBox.question(self, 'game over',
+                                           f"{self.state}",
+                                           QMessageBox.Ok)
+        if buttonReply == QMessageBox.Ok:
+            self.close()
 
     def stop_game(self):
         self.timer.stop()
